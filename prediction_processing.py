@@ -10,6 +10,8 @@ import pandas as pd
 import seaborn as sns
 import shap
 from imblearn.over_sampling import SMOTE
+from sklearn.model_selection import train_test_split
+from tqdm import tqdm
 
 warnings.filterwarnings('ignore')
 room_list = pd.read_csv('data_compiled.csv')['Location'].unique()
@@ -34,13 +36,16 @@ def original_dataloader(room: int):
 def prediction_dataloader(room: int):
     data = pd.read_csv('./prediction.csv', index_col=None)
     data = data[data.room == room].reset_index(drop=True)
-    real = json.loads(data.loc[0, 'real'])
-    predict = json.loads(data.loc[0, 'predict'])
-    correct = 0
-    for i in range(len(real)):
-        if 0.9 * real[i] <= predict[i] <= 1.1 * real[i]:
-            correct += 1
-    return float(correct / len(real)), real, predict
+    real = np.array(json.loads(data.loc[0, 'real']))
+    predict = np.array(json.loads(data.loc[0, 'predict']))
+    real_train, real_test, predict_train, predict_test = train_test_split(real, predict, test_size=0.25)
+    train_acc = sum([1 if 0.9 * real_train[i] <= predict_train[i] <= 1.1 * real_train[i] else 0 for i in
+                     range(len(real_train))]) / len(real_train)
+    test_acc = sum([1 if 0.9 * real_test[i] <= predict_test[i] <= 1.1 * real_test[i] else 0 for i in
+                    range(len(real_test))]) / len(real_test)
+    train_rmse = sqrt(sum([(real_train[i] - predict_train[i]) ** 2 for i in range(len(real_train))]) / len(real_train))
+    test_rmse = sqrt(sum([(real_test[i] - predict_test[i]) ** 2 for i in range(len(real_test))]) / len(real_test))
+    return train_acc, test_acc, train_rmse, test_rmse, real_train, real_test, predict_train, predict_test, real, predict
 
 
 def view_shap_importance(room: int):
@@ -65,28 +70,38 @@ def calculate_RMSE(room: int):
 
 
 def plot_shap_interact(room: int):
+    plt.rcParams.update({'font.size': 20})
     model = pickle.load(open('./models2/{}.pickle.bat'.format(room), 'rb'))
     explainer = shap.TreeExplainer(model)
     X, y = original_dataloader(room)
     shap_values = explainer.shap_values(X)
     shap.dependence_plot("Temperature", shap_values, X, interaction_index="Humidity", save=True,
-                         path="./shap_TH_ac_plot/{}.png".format(room), show=False)
+                         path="./shap_TH_ac_plot/{}.png".format(room), show=False,
+                         title="Shapley Value for Temperature & Humidity of Room {}".format(room))
 
 
 def plot_distribution(room: int):
-    accuracy, real, prediction = prediction_dataloader(room)
+    plt.rcParams.update({'font.size': 15})
+    train_acc, test_acc, train_rmse, test_rmse, real_train, real_test, predict_train, predict_test, real, predict = \
+        prediction_dataloader(room)
     plt.rc('font', family='Times New Roman')
-    sns.regplot(x=real, y=prediction, scatter=True, y_jitter=0.45, x_jitter=0.2, marker=".",
-                scatter_kws={"s": 15, "color": "black"},
-                line_kws={"color": "red", "label": "Real-Prediction Regression Line"}, label="(Real, Prediction)")
+    ax = sns.regplot(x=real_train, y=predict_train, scatter=True, y_jitter=0.45, x_jitter=0.1, marker="o",
+                     scatter_kws={"s": 15, "color": "blue"},
+                     label="Train: Accuracy {} & RMSE {}".format(round(train_acc * 100, 2), round(train_rmse, 2)),
+                     fit_reg=False)
+    sns.regplot(x=real_test, y=predict_test, scatter=True, y_jitter=0.45, x_jitter=0.1, marker="o",
+                scatter_kws={"s": 15, "color": "red"},
+                label="Test: Accuracy {} & RMSE {}".format(round(100 * test_acc, 2), round(test_rmse, 2)),
+                fit_reg=False)
     real_range = np.linspace(min(real), max(real))
-    sns.lineplot(x=real_range, y=real_range, color='blue', dashes=True, style=True, label="Identity Line")
-    sns.lineplot(x=real_range, y=0.9 * real_range, color='blue', dashes=True, style=True)
-    sns.lineplot(x=real_range, y=1.1 * real_range, color='blue', dashes=[real_range], style=True)
+    ax.plot(real_range, real_range, color='m', linestyle="-.", linewidth=1, label="Identity Line")
+    ax.plot(real_range, 0.9 * real_range, color='m', linestyle="-.", linewidth=1)
+    ax.plot(real_range, 1.1 * real_range, color='m', linestyle="-.", linewidth=1)
     plt.title("Prediction Validation Graph of Room {}".format(room))
     plt.ylabel("Prediction")
     plt.legend()
-    plt.xlabel("Original AC\nAccuracy: {}%".format(round(100 * accuracy, 2)))
+    plt.xlabel("Original AC\nOverall Accuracy: {}%".format(
+        round(100 * (train_acc * len(real_train) + test_acc * len(real_test)) / len(real), 2)))
     plt.savefig("./distribution_plot/room{}.png".format(room))
     plt.clf()
 
@@ -115,10 +130,10 @@ def plot_error_distribution():
 
 
 if __name__ == "__main__":
-    # for room in tqdm(room_list):
-    #     if room == 309 or room == 312 or room == 917 or room == 1001:
-    #         continue
-    #
-    #     plot_shap_interact(room)
-    #     plot_distribution(room)
+    for room in tqdm(room_list):
+        if room == 309 or room == 312 or room == 917 or room == 1001:
+            continue
+
+        plot_shap_interact(room)
+        plot_distribution(room)
     plot_error_distribution()
