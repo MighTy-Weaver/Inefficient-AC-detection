@@ -1,6 +1,7 @@
 # Inefficient-AC-detection
 
-This is the code repository for the paper _____________________
+This is the code repository for the paper _____________________, you can find the paper directly through here 
+[Paper](www.github.com)
 
 
 ## 1. Environment Setup
