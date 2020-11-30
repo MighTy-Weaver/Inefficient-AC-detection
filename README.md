@@ -1,11 +1,10 @@
 # Inefficient-AC-detection
 
-This is the code repository for the paper _____________________, you can find the paper directly through here 
-[Paper](https://www.google.com)
+This is the code repository for the paper _____________________, you can find the paper directly through [here](https://www.google.com)
 
 
 ## 1. Environment Setup
-The experiment is conducted under: CentOS 7.0 or Windows 10 with Python 3.7/3.8 as the developing environment.
+The experiment is conducted under: Windows 10 with Python 3.7/3.8 as the developing environment.
 
 Use `pip install -r requirements.txt` to install all the packages. 
 
