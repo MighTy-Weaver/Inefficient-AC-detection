@@ -17,7 +17,7 @@ pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 
 # Load the data with a positive AC electricity consumption value, and drop the time data as we don't need them
-data = pd.read_csv("Summer_data_prev_AC_updated.csv", index_col=0)
+data = pd.read_csv("data_compiled.csv", index_col=0)
 data = data[data.AC > 0].drop(['Time', 'Date', 'Hour'], axis=1).reset_index(drop=True)
 
 if not os.path.exists('./shap_importance_plot'):

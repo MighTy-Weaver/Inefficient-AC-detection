@@ -12,13 +12,13 @@ import shap
 from imblearn.over_sampling import SMOTE
 
 warnings.filterwarnings('ignore')
-room_list = pd.read_csv('./Summer_data_prev_AC_updated.csv')['Location'].unique()
+room_list = pd.read_csv('data_compiled.csv')['Location'].unique()
 plt.rc('font', family='Times New Roman')
 plt.rcParams["savefig.bbox"] = "tight"
 
 
 def original_dataloader(room: int):
-    data = pd.read_csv('./Summer_data_prev_AC_updated.csv', index_col=0).drop(['Time', 'Hour', 'Date'], axis=1)
+    data = pd.read_csv('data_compiled.csv', index_col=0).drop(['Time', 'Hour', 'Date'], axis=1)
     room_data = data[data.Location == room]
     room_data['SMOTE_split'] = (room_data['AC'] > 0.7).astype('int')
     X = room_data.drop(['SMOTE_split'], axis=1)
