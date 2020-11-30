@@ -25,6 +25,10 @@ Run the `room_xgboost_training.py` to train the model, we use xgboost squared re
  
 The training shall take about two hours with the `data_compiled` we provided.
 
+We provide some demonstrations of the results by the XGBoost models.
+![Accuracy Distribution Histogram](AccDis.png)
+![RMSE Distribution Histogram](RMSEDis.png)
+
 ## 4. Result Visualization
 
 After you've trained the models, run the `prediction_processing.py` to generate the visual graphs of the result. 
