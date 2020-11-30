@@ -23,7 +23,8 @@ Again, you must have all the packages above installed.
 
 Run the `room_xgboost_training.py` to train the model, we use xgboost squared regressor and cross validation to do the training.
  
-The training shall take about two hours with the `data_compiled` we provided.
+The training shall take about two hours with the `data_compiled` we provided. Models will be dumped into `models` folder, and two csv files
+will be generated, recording the information about results after cross validation and the real-prediction value of each room. Please keep these files since we'll use them to plot the figures.
 
 We provide some demonstrations of the results by the XGBoost models.
 ![Accuracy Distribution Histogram](AccDis.png)
@@ -33,8 +34,9 @@ We provide some demonstrations of the results by the XGBoost models.
 
 After you've trained the models, run the `prediction_processing.py` to generate the visual graphs of the result. 
 
-It will generate distribution, interactive shapley value, overall RMSE, overall accuracy distribution graph.
+It will generate distribution plot for each room, interactive shapley value for each room's model, an overall RMSE histogram and an overall accuracy distribution histogram.
 
-For the Shapley value, please refer to [Shapley Additive Explanation](https://github.com/slundberg/shap)
+For detail about the Shapley value, please refer to [Shapley Additive Explanation](https://github.com/slundberg/shap)
 
-The graphs will be dumped into three folders
+The graphs will be dumped into three folders: `distribution_plot`, `shap_TH_ac_plot` and the current work directory.
+
