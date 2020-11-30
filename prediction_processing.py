@@ -81,7 +81,7 @@ def plot_shap_interact(room: int):
 
 
 def plot_distribution(room: int):
-    plt.rcParams.update({'font.size': 15})
+    plt.rcParams.update({'font.size': 11})
     train_acc, test_acc, train_rmse, test_rmse, real_train, real_test, predict_train, predict_test, real, predict = \
         prediction_dataloader(room)
     plt.rc('font', family='Times New Roman')
@@ -99,7 +99,7 @@ def plot_distribution(room: int):
     ax.plot(real_range, 1.1 * real_range, color='m', linestyle="-.", linewidth=1)
     plt.title("Prediction Validation Graph of Room {}".format(room))
     plt.ylabel("Prediction")
-    plt.legend()
+    plt.legend(frameon=False)
     plt.xlabel("Original AC\nOverall Accuracy: {}%".format(
         round(100 * (train_acc * len(real_train) + test_acc * len(real_test)) / len(real), 2)))
     plt.savefig("./distribution_plot/room{}.png".format(room))
