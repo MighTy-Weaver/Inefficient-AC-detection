@@ -7,7 +7,6 @@ from statistics import mean
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import seaborn as sns
 import shap
 from imblearn.over_sampling import SMOTE
 from sklearn.model_selection import train_test_split
@@ -45,7 +44,8 @@ def prediction_dataloader(room: int):
                     range(len(real_test))]) / len(real_test)
     train_rmse = sqrt(sum([(real_train[i] - predict_train[i]) ** 2 for i in range(len(real_train))]) / len(real_train))
     test_rmse = sqrt(sum([(real_test[i] - predict_test[i]) ** 2 for i in range(len(real_test))]) / len(real_test))
-    return train_acc, test_acc, train_rmse, test_rmse, real_train, real_test, predict_train, predict_test, real, predict
+    return train_acc, test_acc, train_rmse, test_rmse, real_train, real_test, predict_train, predict_test, \
+           real, predict
 
 
 def view_shap_importance(room: int):
@@ -85,21 +85,15 @@ def plot_distribution(room: int):
     train_acc, test_acc, train_rmse, test_rmse, real_train, real_test, predict_train, predict_test, real, predict = \
         prediction_dataloader(room)
     plt.rc('font', family='Times New Roman')
-    ax = sns.regplot(x=real_train, y=predict_train, scatter=True, y_jitter=0.45, x_jitter=0.1, marker="o",
-                     scatter_kws={"s": 15, "color": "blue"},
-                     label="Train: Accuracy {} & RMSE {}".format(round(train_acc * 100, 2), round(train_rmse, 2)),
-                     fit_reg=False)
-    sns.regplot(x=real_test, y=predict_test, scatter=True, y_jitter=0.45, x_jitter=0.1, marker="o",
-                scatter_kws={"s": 15, "color": "red"},
-                label="Test: Accuracy {} & RMSE {}".format(round(100 * test_acc, 2), round(test_rmse, 2)),
-                fit_reg=False)
+    real = real + np.random.uniform(-0.05, 0.35, len(real))
+    predict = predict + np.random.uniform(-0.1, 0.35, len(predict))
+    plt.scatter(real, predict, c=real - predict, marker='o', label="(Real, Prediction)", s=10)
     real_range = np.linspace(min(real), max(real))
-    ax.plot(real_range, real_range, color='m', linestyle="-.", linewidth=1, label="Identity Line")
-    ax.plot(real_range, 0.9 * real_range, color='m', linestyle="-.", linewidth=1)
-    ax.plot(real_range, 1.1 * real_range, color='m', linestyle="-.", linewidth=1)
+    plt.plot(real_range, real_range, color='m', linestyle="-.", linewidth=1, label="Identity Line (y=x)")
     plt.title("Prediction Validation Graph of Room {}".format(room))
     plt.ylabel("Prediction")
     plt.legend(frameon=False)
+    plt.colorbar(label="Error (Real Value - Prediction)")
     plt.xlabel("Original AC\nOverall Accuracy: {}%".format(
         round(100 * (train_acc * len(real_train) + test_acc * len(real_test)) / len(real), 2)))
     plt.savefig("./distribution_plot/room{}.png".format(room))
@@ -133,7 +127,6 @@ if __name__ == "__main__":
     for room in tqdm(room_list):
         if room == 309 or room == 312 or room == 917 or room == 1001:
             continue
-
-        plot_shap_interact(room)
+        # plot_shap_interact(room)
         plot_distribution(room)
     plot_error_distribution()
