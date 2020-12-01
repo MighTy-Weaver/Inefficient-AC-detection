@@ -9,6 +9,8 @@ import numpy as np
 import pandas as pd
 import shap
 from imblearn.over_sampling import SMOTE
+from matplotlib import cm
+from matplotlib.colors import ListedColormap
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 
@@ -37,6 +39,7 @@ def prediction_dataloader(room: int):
     data = data[data.room == room].reset_index(drop=True)
     real = np.array(json.loads(data.loc[0, 'real']))
     predict = np.array(json.loads(data.loc[0, 'predict']))
+    rmse = sqrt(sum([(real[i] - predict[i]) ** 2 for i in range(len(real))]) / len(real))
     real_train, real_test, predict_train, predict_test = train_test_split(real, predict, test_size=0.25)
     train_acc = sum([1 if 0.9 * real_train[i] <= predict_train[i] <= 1.1 * real_train[i] else 0 for i in
                      range(len(real_train))]) / len(real_train)
@@ -45,7 +48,7 @@ def prediction_dataloader(room: int):
     train_rmse = sqrt(sum([(real_train[i] - predict_train[i]) ** 2 for i in range(len(real_train))]) / len(real_train))
     test_rmse = sqrt(sum([(real_test[i] - predict_test[i]) ** 2 for i in range(len(real_test))]) / len(real_test))
     return train_acc, test_acc, train_rmse, test_rmse, real_train, real_test, predict_train, predict_test, \
-           real, predict
+           real, predict, rmse
 
 
 def view_shap_importance(room: int):
@@ -81,21 +84,25 @@ def plot_shap_interact(room: int):
 
 
 def plot_distribution(room: int):
-    plt.rcParams.update({'font.size': 11})
-    train_acc, test_acc, train_rmse, test_rmse, real_train, real_test, predict_train, predict_test, real, predict = \
-        prediction_dataloader(room)
+    plt.rcParams.update({'font.size': 13})
+    train_acc, test_acc, train_rmse, test_rmse, real_train, real_test, predict_train, predict_test, real, \
+    predict, rmse = prediction_dataloader(room)
     plt.rc('font', family='Times New Roman')
     real = real + np.random.uniform(-0.05, 0.35, len(real))
     predict = predict + np.random.uniform(-0.1, 0.35, len(predict))
-    plt.scatter(real, predict, c=real - predict, marker='o', label="(Real, Prediction)", s=10)
+    newcolors = cm.get_cmap('viridis', 256)(np.linspace(0, 1, 256))
+    newcolors[:128, :] = newcolors[128:, :]
+    newcolors[128:, :] = np.flipud(newcolors[128:, :])
+    newcmp = ListedColormap(newcolors)
+    plt.scatter(real, predict, c=real - predict, marker='o', label="(Real, Prediction)", s=10, cmap=newcmp)
     real_range = np.linspace(min(real), max(real))
     plt.plot(real_range, real_range, color='m', linestyle="-.", linewidth=1, label="Identity Line (y=x)")
     plt.title("Prediction Validation Graph of Room {}".format(room))
     plt.ylabel("Prediction")
     plt.legend(frameon=False)
     plt.colorbar(label="Error (Real Value - Prediction)")
-    plt.xlabel("Original AC\nOverall Accuracy: {}%".format(
-        round(100 * (train_acc * len(real_train) + test_acc * len(real_test)) / len(real), 2)))
+    plt.xlabel("Original AC\nOverall Accuracy: {}%\nRoot Mean Square Error: {}".format(
+        round(100 * (train_acc * len(real_train) + test_acc * len(real_test)) / len(real), 2), round(rmse, 4)))
     plt.savefig("./distribution_plot/room{}.png".format(room))
     plt.clf()
 
@@ -127,6 +134,6 @@ if __name__ == "__main__":
     for room in tqdm(room_list):
         if room == 309 or room == 312 or room == 917 or room == 1001:
             continue
-        # plot_shap_interact(room)
+        plot_shap_interact(room)
         plot_distribution(room)
     plot_error_distribution()
