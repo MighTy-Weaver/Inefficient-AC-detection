@@ -40,3 +40,7 @@ For detail about the Shapley value, please refer to [Shapley Additive Explanatio
 
 The graphs will be dumped into three folders: `distribution_plot`, `shap_TH_ac_plot` and the current work directory.
 
+
+## 5. Acknowledgement
+
+This project is funded by Undergraduate Research Opportunities Program by HKUST UROP Office
