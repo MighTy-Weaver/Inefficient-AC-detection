@@ -20,6 +20,12 @@ The raw data before compilation will not be made available due to privacy reason
 Again, you must have all the packages above installed.
 
 Run the `room_xgboost_training.py` to train the model, we use xgboost squared regressor and cross validation to do the training. Each room's model has been boosted for 300 rounds, and we used the [SMOTE](https://doi.org/10.1613/jair.953) algorithm to help with the imbalance distribution of the data.
+
+Here is a simple demonstration of the data distribution before the [SMOTE](https://doi.org/10.1613/jair.953) algorithm.
+![SMOTE_before](SMOTE_before.png)
+
+After the [SMOTE](https://doi.org/10.1613/jair.953) algorithm, the distribution for AC below or above 0.7 is balanced.
+![SMOTE_after](SMOTE_After.png)
  
 The training shall take about two hours with the `data_compiled` we provided. Models will be dumped into `models` folder, and two csv files
 will be generated, recording the information about results after cross validation and the real-prediction value of each room. Please keep these files since we'll use them to plot the figures.
