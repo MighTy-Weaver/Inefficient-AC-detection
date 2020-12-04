@@ -8,7 +8,7 @@ The experiment is conducted under: Windows 10 with Python 3.7/3.8 as the develop
 
 Use `pip install -r requirements.txt` to install all the packages. 
 
-**In short, You must have `xgboost, numpy, seaborn, matplotlib, pandas, shap, warnings` installed.**
+**In short, You must have `xgboost, numpy, seaborn, matplotlib, pandas, shap, warnings, scikit-learn` installed.**
 
 ## 2. Data Compilation
 We provide the compiled version of our experiment data `data_compiled.csv`. All the raw source data can be accessed through this **[link](https://www.google.com)**(to be updated)
