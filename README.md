@@ -11,11 +11,9 @@ Use `pip install -r requirements.txt` to install all the packages.
 **In short, You must have `xgboost, numpy, seaborn, matplotlib, pandas, shap, warnings, scikit-learn` installed.**
 
 ## 2. Data Compilation
-We provide the compiled version of our experiment data `data_compiled.csv`. All the raw source data can be accessed through this **[link](https://www.google.com)**(to be updated)
+We provide the compiled version of our experiment data `data_compiled.csv`, it can also be accessed through Mendeley Data by **[here](https://data.mendeley.com/datasets/2932z9dz6g/3). 
 
-The data is compiled by Python and the code is released in the folder `dataCompilation`.
-
-You might need to modify some path to make it work. Or you can simply use our compiled version.
+The raw data before compilation will not be made available due to privacy reasons.
 
 ## 3. Training the XGBoost Model
 
@@ -43,4 +41,12 @@ The graphs will be dumped into three folders: `distribution_plot`, `shap_TH_ac_p
 
 ## 5. Acknowledgement
 
-This project is funded by Undergraduate Research Opportunities Program by HKUST UROP Office
+This project is funded by Undergraduate Research Opportunities Program by HKUST UROP Office.
+
+## 6. Citing this work
+
+Please use the Bibtex below for citation of this work
+
+```
+Bibtex Citation to be updated
+```
