@@ -2,11 +2,17 @@
 # By plotting the distribution histogram of data, we can show that SMOTE is
 # capable of helping imbalanced data to distribute more evenly, in order to avoid over-fitting.
 
+import os
 import warnings
 
 import matplotlib.pyplot as plt
 import pandas as pd
 from imblearn.over_sampling import SMOTE
+from tqdm import tqdm
+
+# Make the folder to store the result
+if not os.path.exists('./SMOTE_room/'):
+    os.mkdir('./SMOTE_room/')
 
 # Ignore the warnings.
 warnings.filterwarnings('ignore')
@@ -19,27 +25,34 @@ data = data[data.AC > 0].drop(['Time', 'Date', 'Hour'], axis=1).reset_index(drop
 plt.rcParams.update({'font.size': 15})
 plt.rc('font', family='Times New Roman')
 
-# plot the histogram of the AC value before the SMOTE algorithm. It will be saved to the current work directory
-plt.hist(data['AC'], bins=100, facecolor="blue", edgecolor="black", alpha=0.7)
-plt.xlabel("AC value")
-plt.ylabel("Occurrence")
-plt.title("AC Value Distribution Before SMOTE Algorithm")
-plt.savefig('./SMOTE_before.png')
-plt.clf()
+# ranging through all the rooms
+for room in tqdm(data['Location'].unique()):
+    # Four rooms have low quality data and we delete them manually
+    if room == 309 or room == 312 or room == 917 or room == 1001:
+        continue
+    data_room = data[data.Location == room]
 
-# Label all the AC data by 0.7, all AC above 0.7 will be marked as 1, otherwise 0. Split into X and y
-data['SMOTE_split'] = (data['AC'] > 0.7).astype('int')
-X = data.drop(['SMOTE_split'], axis=1)
-y = data['SMOTE_split']
+    # plot the histogram of the AC value before the SMOTE algorithm. It will be saved to the current work directory
+    plt.hist(data_room['AC'], bins=100, facecolor="blue", edgecolor="black", alpha=0.7)
+    plt.xlabel("AC value")
+    plt.ylabel("Occurrence")
+    plt.title("AC Value Distribution for Room {} Before SMOTE".format(room))
+    plt.savefig('./SMOTE_room/room{}before.png'.format(room))
+    plt.clf()
 
-# Run the SMOTE algorithm and retrieve the result.
-model_smote = SMOTE(random_state=621, k_neighbors=3)
-room_data_smote, smote_split = model_smote.fit_resample(X, y)
+    # Label all the AC data by 0.7, all AC above 0.7 will be marked as 1, otherwise 0. Split into X and y
+    data_room['SMOTE_split'] = (data_room['AC'] > 0.7).astype('int')
+    X = data_room.drop(['SMOTE_split'], axis=1)
+    y = data_room['SMOTE_split']
 
-# Plot the AC distribution histogram after the SMOTE algorithm.
-plt.hist(room_data_smote['AC'], bins=100, facecolor="blue", edgecolor="black", alpha=0.7)
-plt.xlabel("AC value")
-plt.ylabel("Occurrence")
-plt.title("AC Value Distribution After SMOTE Algorithm")
-plt.savefig('./SMOTE_After.png')
-plt.clf()
+    # Run the SMOTE algorithm and retrieve the result.
+    model_smote = SMOTE(random_state=621, k_neighbors=3)
+    room_data_smote, smote_split = model_smote.fit_resample(X, y)
+
+    # Plot the AC distribution histogram after the SMOTE algorithm.
+    plt.hist(room_data_smote['AC'], bins=100, facecolor="blue", edgecolor="black", alpha=0.7)
+    plt.xlabel("AC value")
+    plt.ylabel("Occurrence")
+    plt.title("AC Value Distribution for Room {} After SMOTE".format(room))
+    plt.savefig('./SMOTE_room/room{}after.png'.format(room))
+    plt.clf()
