@@ -22,8 +22,12 @@ data = pd.read_csv("data_compiled.csv", index_col=0)
 data = data[data.AC > 0].drop(['Time', 'Date', 'Hour'], axis=1).reset_index(drop=True)
 
 # Set some general settings of all the matplotlib.
-plt.rcParams.update({'font.size': 15})
+plt.rcParams.update({'font.size': 13})
 plt.rc('font', family='Times New Roman')
+
+# Set up two empty list to record the AC before and after for each room
+AC_before = []
+AC_after = []
 
 # ranging through all the rooms
 for room in tqdm(data['Location'].unique()):
@@ -39,6 +43,8 @@ for room in tqdm(data['Location'].unique()):
     plt.title("AC Value Distribution for Room {} Before SMOTE".format(room))
     plt.savefig('./SMOTE_room/room{}before.png'.format(room))
     plt.clf()
+
+    AC_before.extend(list(data_room['AC']))
 
     # Label all the AC data by 0.7, all AC above 0.7 will be marked as 1, otherwise 0. Split into X and y
     data_room['SMOTE_split'] = (data_room['AC'] > 0.7).astype('int')
@@ -56,3 +62,20 @@ for room in tqdm(data['Location'].unique()):
     plt.title("AC Value Distribution for Room {} After SMOTE".format(room))
     plt.savefig('./SMOTE_room/room{}after.png'.format(room))
     plt.clf()
+
+    AC_after.extend(room_data_smote['AC'])
+
+# With the AC values in each room before and after the SMOTE, we can plot a distribution histogram for all rooms.
+plt.hist(AC_before, bins=100, facecolor="blue", edgecolor="black", alpha=0.7)
+plt.xlabel("AC value")
+plt.ylabel("Occurrence")
+plt.title("AC Value Distribution for All Rooms before SMOTE")
+plt.savefig('./SMOTE_before.png')
+plt.clf()
+
+plt.hist(AC_after, bins=100, facecolor="blue", edgecolor="black", alpha=0.7)
+plt.xlabel("AC value")
+plt.ylabel("Occurrence")
+plt.title("AC Value Distribution for All Rooms after SMOTE")
+plt.savefig('./SMOTE_after.png')
+plt.clf()
