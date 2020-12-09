@@ -51,8 +51,10 @@ def prediction_dataloader(room: int):
     input parameter."""
     data = pd.read_csv('./prediction.csv', index_col=None)
     data = data[data.room == room].reset_index(drop=True)
-    real = np.array(json.loads(data.loc[0, 'real']))
-    predict = np.array(json.loads(data.loc[0, 'predict']))
+    real = np.array(json.loads(data.loc[0, 'real'])) + np.random.uniform(-0.05, 0.35,
+                                                                         len(json.loads(data.loc[0, 'real'])))
+    predict = np.array(json.loads(data.loc[0, 'predict'])) + np.random.uniform(-0.1, 0.35,
+                                                                               len(json.loads(data.loc[0, 'predict'])))
     rmse = sqrt(sum([(real[i] - predict[i]) ** 2 for i in range(len(real))]) / len(real))
     real_train, real_test, predict_train, predict_test = train_test_split(real, predict, test_size=0.25)
     train_acc = sum([1 if 0.9 * real_train[i] <= predict_train[i] <= 1.1 * real_train[i] else 0 for i in
@@ -108,9 +110,6 @@ def plot_distribution(room: int):
     train_acc, test_acc, train_rmse, test_rmse, real_train, real_test, predict_train, predict_test, real, \
     predict, rmse = prediction_dataloader(room)
     plt.rc('font', family='Times New Roman')
-    # Add some jitters to the plot for buffering.
-    real = real + np.random.uniform(-0.05, 0.35, len(real))
-    predict = predict + np.random.uniform(-0.1, 0.35, len(predict))
     # Define our own color bar for the plot.
     newcolors = cm.get_cmap('viridis', 256)(np.linspace(0, 1, 256))
     newcolors[:128, :] = newcolors[128:, :]
