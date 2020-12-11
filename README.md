@@ -16,9 +16,10 @@ experiment: **`xgboost, numpy, seaborn, matplotlib, pandas, shap, warnings, scik
 
 *Due to the privacy issues, the dataset will not be made open to public.*
 
-However, we still provide
-a [sample version](https://github.com/MighTy-Weaver/Inefficient-AC-detection/blob/main/sample_data.csv) of the full
-dataset to demonstrate the formation of our experimenting data.
+However, we still provide a 200
+lines [sample version](https://github.com/MighTy-Weaver/Inefficient-AC-detection/blob/main/sample_data.csv) of the full
+dataset to demonstrate the formation of our experimenting data. Please notice that the `Location` are set to 0 for
+privacy.
 
 ## 3. Training the XGBoost Model
 
