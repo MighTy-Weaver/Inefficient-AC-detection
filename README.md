@@ -1,7 +1,7 @@
 # Inefficient-AC-detection
 
 This is the code repository for the paper **<font color=red>TO BE UPDATED</font>**, you can find the paper directly
-through **[here](https://www.google.com)****<font color=red>TO BE UPDATED</font>**
+through **[here](https://www.google.com)** **<font color=red>TO BE UPDATED</font>**
 
 ## 1. Environment Setup
 
@@ -52,7 +52,8 @@ The graphs will be dumped into three folders: `distribution_plot`, `shap_TH_ac_p
 
 ## 5. Acknowledgement
 
-This project is conducted under the supervision of Prof.Lu Zhongming.
+This project is conducted under the supervision
+of [Prof.Lu Zhongming](https://facultyprofiles.ust.hk/profiles.php?profile=zhongming-lu-zhongminglu).
 
 ## 6. Citing this work **<font color=red>TO BE UPDATED</font>**
 
