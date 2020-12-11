@@ -9,14 +9,16 @@ The experiment is conducted under: Windows 10 with Python 3.7/3.8 as the develop
 
 Use `pip install -r requirements.txt` to install all the packages.
 
-**Alternatively, you can manually install these packages, they must be installed correctly to conduct the
-experiment: `xgboost, numpy, seaborn, matplotlib, pandas, shap, warnings, scikit-learn`**
+Alternatively, you can manually install these packages, they must be installed correctly to conduct the
+experiment: **`xgboost, numpy, seaborn, matplotlib, pandas, shap, warnings, scikit-learn`**
 
 ## 2. Data Compilation
 
-Due to the privacy issues, the dataset will not be made open to public. However, we still provide
+*Due to the privacy issues, the dataset will not be made open to public.*
+
+However, we still provide
 a [sample version](https://github.com/MighTy-Weaver/Inefficient-AC-detection/blob/main/sample_data.csv) of the full
-dataset to demonstrate the formation of our experiment data.
+dataset to demonstrate the formation of our experimenting data.
 
 ## 3. Training the XGBoost Model
 
