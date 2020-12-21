@@ -20,7 +20,7 @@ from tqdm import tqdm
 
 # Ignore the warnings, let pandas print the full message and do some overall settings for matplotlib.
 warnings.filterwarnings('ignore')
-room_list = pd.read_csv('data_compiled.csv')['Location'].unique()
+room_list = pd.read_csv('summer_data_compiled.csv')['Location'].unique()
 plt.rc('font', family='Times New Roman')
 plt.rcParams["savefig.bbox"] = "tight"
 
@@ -30,7 +30,7 @@ def original_dataloader(room: int):
     """This is the function to load the original data and run the SMOTE algorithm on them.
     It will return the X and y split from the original data after SMOTE. It takes the room number as the input
     parameter."""
-    data = pd.read_csv('data_compiled.csv', index_col=0).drop(['Time', 'Hour', 'Date'], axis=1)
+    data = pd.read_csv('summer_data_compiled.csv', index_col=0).drop(['Time', 'Hour', 'Date'], axis=1)
     room_data = data[data.Location == room]
     room_data['SMOTE_split'] = (room_data['AC'] > 0.7).astype('int')
     X = room_data.drop(['SMOTE_split'], axis=1)

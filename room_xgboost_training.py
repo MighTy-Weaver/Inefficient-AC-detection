@@ -21,7 +21,7 @@ pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 
 # Load the data with a positive AC electricity consumption value, and drop the time data as we don't need them
-data = pd.read_csv("data_compiled.csv", index_col=0)
+data = pd.read_csv("summer_data_compiled.csv", index_col=0)
 data = data[data.AC > 0].drop(['Time', 'Date', 'Hour'], axis=1).reset_index(drop=True)
 
 # Make some system path to store the results.
