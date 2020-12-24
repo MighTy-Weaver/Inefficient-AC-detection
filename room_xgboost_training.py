@@ -45,6 +45,7 @@ def ten_percent_accuracy(predt: np.ndarray, dtrain: DMatrix) -> Tuple[str, float
     return "10%Accuracy", float(correct / total)
 
 
+print("Start Training the models")
 # Create two dataframes to store the result during the training and after the training.
 error_csv = pd.DataFrame(
     columns=['room', 'train-10%Accuracy-mean', 'train-10%Accuracy-std', 'train-rmse-mean', 'train-rmse-std',
@@ -111,7 +112,7 @@ for room in tqdm(data['Location'].unique()):
     real = np.array(y)
     prediction_csv.loc[len(prediction_csv)] = {'room': room, 'real': json.dumps(real.tolist()),
                                                'predict': json.dumps(prediction.tolist())}
-
+print("Training finished!")
 # dump the two dataframes into csv files.
 error_csv.to_csv('./error.csv', index=False)
 prediction_csv.to_csv('./prediction.csv', index=False)
