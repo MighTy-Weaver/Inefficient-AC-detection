@@ -15,7 +15,6 @@ import shap
 from imblearn.over_sampling import SMOTE
 from matplotlib import cm
 from matplotlib.colors import ListedColormap
-from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 
 # Ignore the warnings, let pandas print the full message and do some overall settings for matplotlib.
@@ -46,25 +45,15 @@ def original_dataloader(room: int):
 # Define our prediction dataloader.
 def prediction_dataloader(room: int):
     """This function is a prediction dataloader, it will return the real value, prediction value, accuracy and RMSE of
-    the predictions, then it split the data and prediction by 3:1, as the train-test split, then returns the real value
-    , prediction value, accuracy and RMSE of two split's predictions correspondingly. It take the room number as the
-    input parameter."""
+    the predictions along with the accuracy. It take the room number as the input parameter."""
     data = pd.read_csv('./prediction.csv', index_col=None)
     data = data[data.room == room].reset_index(drop=True)
-    real = np.array(json.loads(data.loc[0, 'real'])) + np.random.uniform(-0.05, 0.35,
-                                                                         len(json.loads(data.loc[0, 'real'])))
-    predict = np.array(json.loads(data.loc[0, 'predict'])) + np.random.uniform(-0.1, 0.35,
-                                                                               len(json.loads(data.loc[0, 'predict'])))
+    real = np.array(json.loads(data.loc[0, 'real']))
+    predict = np.array(json.loads(data.loc[0, 'predict']))
+    acc = sum([1 for i in range(len(predict)) if 0.9 * real[i] <= predict[i] <= 1.1 * real[i]]) / len(real)
     rmse = sqrt(sum([(real[i] - predict[i]) ** 2 for i in range(len(real))]) / len(real))
-    real_train, real_test, predict_train, predict_test = train_test_split(real, predict, test_size=0.25)
-    train_acc = sum([1 if 0.9 * real_train[i] <= predict_train[i] <= 1.1 * real_train[i] else 0 for i in
-                     range(len(real_train))]) / len(real_train)
-    test_acc = sum([1 if 0.9 * real_test[i] <= predict_test[i] <= 1.1 * real_test[i] else 0 for i in
-                    range(len(real_test))]) / len(real_test)
-    train_rmse = sqrt(sum([(real_train[i] - predict_train[i]) ** 2 for i in range(len(real_train))]) / len(real_train))
-    test_rmse = sqrt(sum([(real_test[i] - predict_test[i]) ** 2 for i in range(len(real_test))]) / len(real_test))
-    return train_acc, test_acc, train_rmse, test_rmse, real_train, real_test, predict_train, predict_test, \
-           real, predict, rmse
+    return real + np.random.uniform(-0.05, 0.35, len(json.loads(data.loc[0, 'real']))), predict + np.random.uniform(
+        -0.1, 0.35, len(json.loads(data.loc[0, 'predict']))), rmse, acc
 
 
 # This is the function to view the shapley additive explanation's importance plot.
@@ -107,8 +96,7 @@ def plot_shap_interact(room: int):
 # This is the function to plot the distribution of the predictions according to the ground truth.
 def plot_distribution(room: int):
     plt.rcParams.update({'font.size': 13})
-    train_acc, test_acc, train_rmse, test_rmse, real_train, real_test, predict_train, predict_test, real, \
-    predict, rmse = prediction_dataloader(room)
+    real, predict, rmse, acc = prediction_dataloader(room)
     plt.rc('font', family='Times New Roman')
     # Define our own color bar for the plot.
     newcolors = cm.get_cmap('viridis', 256)(np.linspace(0, 1, 256))
@@ -116,7 +104,8 @@ def plot_distribution(room: int):
     newcolors[128:, :] = np.flipud(newcolors[128:, :])
     newcmp = ListedColormap(newcolors)
     # Use the scatter plot to plot the distribution with our own color bar.
-    plt.scatter(real, predict, c=real - predict, marker='o', label="(Real, Prediction)", s=10, cmap=newcmp)
+    plt.scatter(real, predict, c=real - predict, marker='o', label="(Real, Prediction)", s=10, cmap=newcmp, vmin=-1,
+                vmax=1)
     real_range = np.linspace(min(real), max(real))
     # Plot the identity line of y=x
     plt.plot(real_range, real_range, color='m', linestyle="-.", linewidth=1, label="Identity Line (y=x)")
@@ -124,9 +113,10 @@ def plot_distribution(room: int):
     plt.ylabel("Prediction")
     plt.legend(frameon=False)
     plt.colorbar(label="Error (Real Value - Prediction)")
-    plt.xlabel("Original AC\nOverall Accuracy: {}%\nRoot Mean Square Error: {}".format(
-        round(100 * (train_acc * len(real_train) + test_acc * len(real_test)) / len(real), 2), round(rmse, 4)))
+    plt.xlabel(
+        "Original AC\nOverall Accuracy: {}%\nRoot Mean Square Error: {}".format(round(100 * acc, 2), round(rmse, 4)))
     plt.savefig("./distribution_plot/room{}.png".format(room))
+    # plt.show()
     plt.clf()
 
 
