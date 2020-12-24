@@ -104,8 +104,8 @@ def plot_distribution(room: int):
     newcolors[128:, :] = np.flipud(newcolors[128:, :])
     newcmp = ListedColormap(newcolors)
     # Use the scatter plot to plot the distribution with our own color bar.
-    plt.scatter(real, predict, c=real - predict, marker='o', label="(Real, Prediction)", s=10, cmap=newcmp, vmin=-1,
-                vmax=1)
+    plt.scatter(real, predict, c=real - predict, marker='o', label="(Real, Prediction)", s=10, cmap=newcmp, vmin=-0.8,
+                vmax=0.8)
     real_range = np.linspace(min(real), max(real))
     # Plot the identity line of y=x
     plt.plot(real_range, real_range, color='m', linestyle="-.", linewidth=1, label="Identity Line (y=x)")
