@@ -1,5 +1,5 @@
 # This is the code for compiling all the data.
-# It's just demonstrating how the data is generated, no raw data will be released.
+# It's demonstrating how the data is generated, no raw data will be released.
 
 import glob
 import os
@@ -44,11 +44,6 @@ data = data.rename(
     columns={'w/m2': 'Irradiance', 'mm': 'Precipitation', '%': 'Humidity', 'Degree Celsius': 'Temperature'})
 data = data.fillna(method='pad', axis=0)
 
-print("Checking Merged Data:")
-print(data.head(10))
-print("Number of data: {}".format(len(data)))
-print(data.isnull().any())
-
 drop_list = ['10/F Public', '10/F Rooms', '3/F Public', '3/F Rooms', '2/F', '4/F', '5/F', '6/F Public', '6/F Rooms',
              '7/F', '8/F Public', '8/F Rooms', '9/F Public', '9/F Rooms', 'ST302', 'ST602', 'ST802', 'ST902',
              'Warden Flat']
@@ -62,6 +57,11 @@ data.insert(1, 'Prev_1hr', '')
 data.insert(1, 'Prev_1hr_AC', '')
 data.insert(2, 'Prev_3hr_AC', '')
 data.insert(3, 'Prev_5hr_AC', '')
+data = data.reset_index(drop=True)
+print("Checking Merged Data:")
+print(data.head(10))
+print("Number of data: {}".format(len(data)))
+print(data.isnull().any())
 print("Start Generating Previous Data")
 for index in trange(len(data)):
     if (index == 0) or (index == 1):
