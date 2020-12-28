@@ -55,10 +55,18 @@ For detail about the Shapley value, please refer to [Shapley Additive Explanatio
 
 The graphs will be dumped into three folders: `distribution_plot`, `shap_TH_ac_plot` and the current work directory.
 
+At the same time, there are also some codes for other visualizations used in the paper.
+
+`SMOTE_plot_demonstration.py` is the code for plotting the difference before and after
+SMOTE, `room_comparison_plotting.py` is for comparison among high/mid/low efficiency ACs.
+
 ## 5. Acknowledgement
 
 This project is conducted under the supervision
 of [Prof.Lu Zhongming](https://facultyprofiles.ust.hk/profiles.php?profile=zhongming-lu-zhongminglu).
+
+If you have any question related to this project, feel free
+to [raise up an issue](https://github.com/MighTy-Weaver/Inefficient-AC-detection/issues).
 
 ## 6. Citing this work **<font color=red>TO BE UPDATED</font>**
 
