@@ -5,7 +5,7 @@ import seaborn as sns
 
 # Read the original data
 data = pd.read_csv('./summer_data_compiled.csv')
-data = data[data.AC > 0]
+data = data[data.AC > 0][data.AC < 1.5]
 
 # Read the List of all rooms and classify them into three efficient list by human observation
 room_list = data['Location'].unique()
@@ -26,7 +26,7 @@ mid_df = pd.concat(mid_list)
 low_df = pd.concat(low_list)
 
 # Set some general settings of all the matplotlib.
-plt.rcParams.update({'font.size': 16})
+plt.rcParams.update({'font.size': 18})
 plt.rc('font', family='Times New Roman')
 
 # Plot the distribution plot.
@@ -41,7 +41,6 @@ sns.distplot(low_df['AC'], bins=sorted(low_df['AC'].unique()),
              hist_kws={"edgecolor": "black"}, kde_kws={"linewidth": "3"})
 
 plt.legend()
-plt.xlabel("AC Electricity Consumption/kWh")
+plt.xlabel("Hourly AC Electricity Consumption/kWh")
 plt.ylabel("Kernel Density")
-plt.title("AC Comparison Between Different Efficiency Groups of ACs")
 plt.show()
