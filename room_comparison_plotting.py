@@ -4,8 +4,8 @@ import pandas as pd
 import seaborn as sns
 
 # Read the original data
-data = pd.read_csv('./summer_data_compiled.csv')
-data = data[data.AC > 0][data.AC < 1.5]
+data = pd.read_csv('./all_data_without_wifi.csv')
+data = data[data.AC > 0]
 
 # Read the List of all rooms and classify them into three efficient list by human observation
 room_list = data['Location'].unique()
@@ -26,18 +26,27 @@ mid_df = pd.concat(mid_list)
 low_df = pd.concat(low_list)
 
 # Set some general settings of all the matplotlib.
-plt.rcParams.update({'font.size': 18})
+plt.rcParams.update({'font.size': 22})
 plt.rc('font', family='Times New Roman')
+
+# Calculate the mean of the data
+high_mean, mid_mean, low_mean = round(np.array(high_df['AC']).mean(), 4), round(np.array(mid_df['AC']).mean(),
+                                                                                4), round(np.array(low_df['AC']).mean(),
+                                                                                          4)
+# Filter out the data less than 1.5
+high_df = high_df[high_df.AC < 1.5]
+mid_df = mid_df[mid_df.AC < 1.5]
+low_df = low_df[low_df.AC < 1.5]
 
 # Plot the distribution plot.
 sns.distplot(high_df['AC'], bins=sorted(high_df['AC'].unique()),
-             label="high-efficiency, mean={}kWh".format(round(np.array(high_df['AC']).mean(), 4)), color="brown",
+             label="high-efficiency, mean={}kWh".format(high_mean), color="brown",
              hist_kws={"edgecolor": "black"}, kde_kws={"linewidth": "3"})
 sns.distplot(mid_df['AC'], bins=sorted(mid_df['AC'].unique()),
-             label="moderate-efficiency, mean={}kWh".format(round(np.array(mid_df['AC']).mean(), 4)), color="darkblue",
+             label="moderate-efficiency, mean={}kWh".format(mid_mean), color="darkblue",
              hist_kws={"edgecolor": "black"}, kde_kws={"linewidth": "3"})
 sns.distplot(low_df['AC'], bins=sorted(low_df['AC'].unique()),
-             label="low-efficiency, mean={}kWh".format(round(np.array(low_df['AC']).mean(), 4)), color="skyblue",
+             label="low-efficiency, mean={}kWh".format(low_mean), color="skyblue",
              hist_kws={"edgecolor": "black"}, kde_kws={"linewidth": "3"})
 
 plt.legend()
