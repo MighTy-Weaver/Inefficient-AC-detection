@@ -22,7 +22,7 @@ data = pd.read_csv("summer_data_compiled.csv", index_col=0)
 data = data[data.AC > 0].drop(['Time', 'Date', 'Hour'], axis=1).reset_index(drop=True)
 
 # Set some general settings of all the matplotlib.
-plt.rcParams.update({'font.size': 13})
+plt.rcParams.update({'font.size': 15})
 plt.rc('font', family='Times New Roman')
 
 # Set up two empty list to record the AC before and after for each room
@@ -66,16 +66,16 @@ for room in tqdm(data['Location'].unique()):
     AC_after.extend(room_data_smote['AC'])
 
 # With the AC values in each room before and after the SMOTE, we can plot a distribution histogram for all rooms.
-plt.hist(AC_before, bins=100, facecolor="blue", edgecolor="black", alpha=0.7)
-plt.xlabel("AC value")
-plt.ylabel("Occurrence")
-plt.title("AC Value Distribution for All Rooms before SMOTE")
-plt.savefig('./SMOTE_before.png')
+plt.hist(AC_before, bins=100, facecolor="blue", edgecolor="black", align='mid')
+plt.xlabel("Hourly AC Electricity Consumption/kWh")
+plt.ylabel("Number of Samples")
+plt.ylim(ymax=12500, ymin=0)
+plt.savefig('./SMOTE_Before.png', bbox_inches='tight')
 plt.clf()
 
-plt.hist(AC_after, bins=100, facecolor="blue", edgecolor="black", alpha=0.7)
-plt.xlabel("AC value")
-plt.ylabel("Occurrence")
-plt.title("AC Value Distribution for All Rooms after SMOTE")
-plt.savefig('./SMOTE_after.png')
+plt.hist(AC_after, bins=100, facecolor="blue", edgecolor="black", align='mid')
+plt.xlabel("Hourly AC Electricity Consumption/kWh")
+plt.ylabel("Number of Samples")
+plt.ylim(ymax=12500, ymin=0)
+plt.savefig('./SMOTE_After.png', bbox_inches='tight')
 plt.clf()

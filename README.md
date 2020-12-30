@@ -32,7 +32,7 @@ training. Each room's model has been boosted for 300 rounds under 10 folds of cr
 the [SMOTE](https://doi.org/10.1613/jair.953) algorithm to help with the imbalance distribution of the data.
 
 Here is a simple demonstration of the data distribution before the [SMOTE](https://doi.org/10.1613/jair.953) algorithm.
-![SMOTE_before](SMOTE_before.png)
+![SMOTE_before](SMOTE_Before.png)
 
 After the [SMOTE](https://doi.org/10.1613/jair.953) algorithm, the distribution for AC below or above 0.7 is balanced.
 ![SMOTE_after](SMOTE_After.png)
