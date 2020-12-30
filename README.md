@@ -40,7 +40,7 @@ After the [SMOTE](https://doi.org/10.1613/jair.953) algorithm, the distribution 
 Models will be dumped into `models` folder, and two csv files will be generated, recording the information about results
 after cross validation and the real-prediction value of each room.
 
-We provide some demonstrations of the results by the XGBoost models.
+We provide some statistical results by the XGBoost models.
 ![Accuracy Distribution Histogram](AccDis.png)
 ![RMSE Distribution Histogram](RMSEDis.png)
 
