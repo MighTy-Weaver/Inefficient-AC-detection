@@ -60,15 +60,15 @@ At the same time, there are also some codes for other visualizations used in the
 `SMOTE_plot_demonstration.py` is the code for plotting the difference before and after
 SMOTE, `room_comparison_plotting.py` is for comparison among high/mid/low efficiency ACs.
 
+In general, this a plot for our result:
+![Room Graph](Room_dis.png)
+
 ## 5. Acknowledgement
 
 This project is conducted under the supervision
 of [Prof.Lu Zhongming](https://facultyprofiles.ust.hk/profiles.php?profile=zhongming-lu-zhongminglu).
 
-If you have any question related to this project, feel free
-to [raise up an issue](https://github.com/MighTy-Weaver/Inefficient-AC-detection/issues).
-
-## 6. Citing this work **<font color=red>TO BE UPDATED</font>**
+## 6. Citing this work **TO BE UPDATED**
 
 Please use the Bibtex below for citation of this work
 
