@@ -74,7 +74,7 @@ This project is conducted under the supervision
 of [Prof.Lu Zhongming](https://facultyprofiles.ust.hk/profiles.php?profile=zhongming-lu-zhongminglu) and it's funded
 by [Undergraduate Research Opportunities Program(UROP)](https://urop.ust.hk/).
 
-## 6. Citing this work **TO BE UPDATED**
+## 6. Citing this work
 
 Please use the Bibtex below for citation of this work:
 
