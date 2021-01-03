@@ -1,6 +1,4 @@
-# Inefficient-AC-detection
-
-This is the code repository for the paper **<font color=red>TO BE UPDATED</font>**, you can find the paper directly
+This is the code repository for the paper **Data-driven Smart Assessment of Room Air Conditioner Efficiency for Saving Energy**, you can find the paper directly
 through **[here](https://www.google.com)** **<font color=red>TO BE UPDATED</font>**
 
 ## 1. Environment Setup
@@ -66,7 +64,8 @@ In general, this a plot for our result:
 ## 5. Acknowledgement
 
 This project is conducted under the supervision
-of [Prof.Lu Zhongming](https://facultyprofiles.ust.hk/profiles.php?profile=zhongming-lu-zhongminglu).
+of [Prof.Lu Zhongming](https://facultyprofiles.ust.hk/profiles.php?profile=zhongming-lu-zhongminglu) and it's funded
+by [Undergraduate Research Opportunities Program(UROP).](https://urop.ust.hk/)
 
 ## 6. Citing this work **TO BE UPDATED**
 
