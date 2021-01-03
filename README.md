@@ -41,8 +41,8 @@ Models will be dumped into `models` folder, and two csv files will be generated,
 after cross validation and the real-prediction value of each room.
 
 We provide some statistical results by the XGBoost models.
-![Accuracy Distribution Histogram](AccDis.png)
-![RMSE Distribution Histogram](RMSEDis.png)
+![Accuracy Distribution Histogram](AccDis.png){:height="50%" width="50%"}
+![RMSE Distribution Histogram](RMSEDis.png){:height="50%" width="50%"}
 
 ## 4. Result Visualization
 
