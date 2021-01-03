@@ -1,5 +1,5 @@
 This is the code repository for the paper **Data-driven Smart Assessment of Room Air Conditioner Efficiency for Saving Energy**, you can find the paper directly
-through **[here](https://www.google.com)** **<font color=red>TO BE UPDATED</font>**
+through **[here](https://www.google.com)**. **TO BE UPDATED**
 
 ## 1. Environment Setup
 
@@ -49,11 +49,11 @@ After you've trained the models, run the `prediction_processing.py` to generate 
 It will generate distribution plot for each room, interactive shapley value for each room's model, an overall RMSE
 histogram and an overall accuracy distribution histogram.
 
-For detail about the Shapley value, please refer to [Shapley Additive Explanation](https://github.com/slundberg/shap)
+For detail about the Shapley value, please refer to [Shapley Additive Explanation](https://github.com/slundberg/shap).
 
 The graphs will be dumped into three folders: `distribution_plot`, `shap_TH_ac_plot` and the current work directory.
 
-At the same time, there are also some codes for other visualizations used in the paper.
+At the same time, there are also some codes for other visualizations used in the paper:
 
 `SMOTE_plot_demonstration.py` is the code for plotting the difference before and after
 SMOTE, `room_comparison_plotting.py` is for comparison among high/mid/low efficiency ACs.
@@ -65,7 +65,7 @@ In general, this a plot for our result:
 
 This project is conducted under the supervision
 of [Prof.Lu Zhongming](https://facultyprofiles.ust.hk/profiles.php?profile=zhongming-lu-zhongminglu) and it's funded
-by [Undergraduate Research Opportunities Program(UROP).](https://urop.ust.hk/)
+by [Undergraduate Research Opportunities Program(UROP)](https://urop.ust.hk/).
 
 ## 6. Citing this work **TO BE UPDATED**
 
