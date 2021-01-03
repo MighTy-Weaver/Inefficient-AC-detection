@@ -12,6 +12,11 @@ Use the following code segment to install all the required packages:
 pip install pandas tqdm matplotlib numpy seaborn statistics shap imbalanced-learn xgboost scikit-learn
 ```
 
+The following code segment is for updating the *pip*:
+```python
+python -m pip install --upgrade pip
+```
+
 ## 2. Data Compilation
 
 ***Due to the privacy issues, the dataset will not be made open to public.***
