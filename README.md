@@ -1,6 +1,6 @@
 # Data-driven Smart Assessment of Inefficient AC detection
 
-This is the code repository for the paper **Data-driven Smart Assessment of Room Air Conditioner Efficiency for Saving Energy**, you can find the paper directly
+This is the code repository for the paper ***Data-driven Smart Assessment of Room Air Conditioner Efficiency for Saving Energy***, you can find the paper directly
 through **[here](https://www.google.com)**. **TO BE UPDATED**
 
 ## 1. Environment Setup
