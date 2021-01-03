@@ -69,8 +69,8 @@ by [Undergraduate Research Opportunities Program(UROP)](https://urop.ust.hk/).
 
 ## 6. Citing this work **TO BE UPDATED**
 
-Please use the Bibtex below for citation of this work
+Please use the Bibtex below for citation of this work:
 
 ```
-Bibtex TO BE UPDATED
+BIBTEX TO BE UPDATED
 ```
