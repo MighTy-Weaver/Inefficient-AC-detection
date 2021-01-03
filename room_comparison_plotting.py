@@ -4,7 +4,7 @@ import pandas as pd
 import seaborn as sns
 
 # Read the original data
-data = pd.read_csv('./all_data_without_wifi.csv')
+data = pd.read_csv('./summer_data_compiled.csv')
 data = data[data.AC > 0]
 
 # Read the List of all rooms and classify them into three efficient list by human observation
