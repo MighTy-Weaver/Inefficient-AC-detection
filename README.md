@@ -1,3 +1,5 @@
+# Data-driven Smart Assessment of Inefficient AC detection
+
 This is the code repository for the paper **Data-driven Smart Assessment of Room Air Conditioner Efficiency for Saving Energy**, you can find the paper directly
 through **[here](https://www.google.com)**. **TO BE UPDATED**
 
@@ -5,10 +7,10 @@ through **[here](https://www.google.com)**. **TO BE UPDATED**
 
 The experiment is conducted under: Windows 10 with Python 3.7/3.8 as the developing environment.
 
-Use `pip install -r requirements.txt` to install all the packages.
-
-Alternatively, you can manually install these packages, they must be installed correctly to conduct the
-experiment: **`xgboost, numpy, seaborn, matplotlib, pandas, shap, warnings, scikit-learn`**
+Use the following code segment to install all the required packages:
+```python
+pip install pandas tqdm matplotlib numpy seaborn statistics shap imbalanced-learn xgboost scikit-learn
+```
 
 ## 2. Data Compilation
 
