@@ -1,7 +1,12 @@
+import warnings
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+
+# Ignore all the warnings
+warnings.filterwarnings('ignore')
 
 # Read the original data
 data = pd.read_csv('./summer_data_compiled.csv')
