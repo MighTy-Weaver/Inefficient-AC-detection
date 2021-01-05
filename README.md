@@ -1,18 +1,22 @@
 # Data-driven Smart Assessment of Inefficient AC detection
 
-This is the code repository for the paper ***Data-driven Smart Assessment of Room Air Conditioner Efficiency for Saving Energy***, you can find the paper directly
-through **[here](https://www.google.com)**. **TO BE UPDATED**
+This is the code repository for the paper ***Data-driven Smart Assessment of Room Air Conditioner Efficiency for Saving
+Energy***, you can find the paper directly through **here (To Be Updated)**.
+
+*Remark: The paper is currently under review at [Applied Energy](https://www.journals.elsevier.com/applied-energy).*
 
 ## 1. Environment Setup
 
 The experiment is conducted under: Windows 10 with Python 3.7/3.8 as the developing environment.
 
 Use the following code segment to install all the required packages:
+
 ```python
 pip install pandas tqdm matplotlib numpy seaborn statistics shap imbalanced-learn xgboost scikit-learn
 ```
 
 The following code segment is for updating the *pip*:
+
 ```python
 python -m pip install --upgrade pip
 ```
@@ -70,14 +74,15 @@ In general, this a plot for our result:
 
 ## 5. Acknowledgement
 
-This project is conducted under the supervision
-of [Prof.Lu Zhongming](https://facultyprofiles.ust.hk/profiles.php?profile=zhongming-lu-zhongminglu) and it's funded
-by [Undergraduate Research Opportunities Program(UROP)](https://urop.ust.hk/).
+This project was supported by the [Undergraduate Research Opportunity Program (UROP)](https://urop.ust.hk/) of The Hong
+Kong University of Science and Technology (HKUST), the Guangdong Basic and Applied Basic Research Foundation (
+2019A1515010828), and HKUST startup. We also thank the data support from the Sustainable Smart Campus as a Living Lab
+initiative of HKUST. The views and ideas expressed here belong solely to the authors and not to the funding agencies.
 
 ## 6. Citing this work
 
 Please use the Bibtex below for citation of this work:
 
 ```
-BIBTEX TO BE UPDATED
+TO BE UPDATED
 ```
