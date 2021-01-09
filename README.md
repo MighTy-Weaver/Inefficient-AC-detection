@@ -76,7 +76,8 @@ In general, this a plot for our result:
 
 This project was supported by the [Undergraduate Research Opportunity Program (UROP)](https://urop.ust.hk/) of The Hong
 Kong University of Science and Technology (HKUST), the Guangdong Basic and Applied Basic Research Foundation (
-2019A1515010828), and HKUST startup. We also thank the data support from the Sustainable Smart Campus as a Living Lab
+2019A1515010828), and HKUST startup. We also thank the data support from
+the [Sustainable Smart Campus as a Living Lab](https://ssc.hkust.edu.hk/)
 initiative of HKUST. The views and ideas expressed here belong solely to the authors and not to the funding agencies.
 
 ## 6. Citing this work
