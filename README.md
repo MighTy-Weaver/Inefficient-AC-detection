@@ -3,7 +3,7 @@
 This is the code repository for the paper ***Data-driven Smart Assessment of Room Air Conditioner Efficiency for Saving
 Energy***, you can find the paper directly through **here (To Be Updated)**.
 
-*Remark: The paper is currently under review at [Applied Energy](https://www.journals.elsevier.com/applied-energy).*
+[comment]: <> (*Remark: The paper is currently under review at [Applied Energy]&#40;https://www.journals.elsevier.com/applied-energy&#41;.*)
 
 ## 1. Environment Setup
 
