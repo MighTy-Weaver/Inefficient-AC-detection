@@ -133,14 +133,14 @@ def plot_error_distribution():
         rmse_list.append(rmse)
     plt.rcParams.update({'font.size': 15})
     # Use the historgram in matplotlib to plot the accuracy distribution histogram.
-    plt.hist(r2_list, bins=50, normed=0, facecolor="blue", edgecolor="black", alpha=0.7)
+    plt.hist(r2_list, bins=50, density=True, facecolor="blue", edgecolor="black", alpha=0.7)
     plt.xlabel("R2 Score\nMean R2 Score: {}".format(round(mean(r2_list), 2)))
     plt.ylabel("Occurrence")
     plt.title("The R2 Score Distribution Histogram")
     plt.savefig('./{}/R2Dis.png'.format(folder_name), bbox_inches='tight')
     plt.clf()
     # Use the same to plot the root mean square error distribution histogram.
-    plt.hist(rmse_list, bins=40, normed=0, facecolor="blue", edgecolor="black", alpha=0.7)
+    plt.hist(rmse_list, bins=40, density=True, facecolor="blue", edgecolor="black", alpha=0.7)
     plt.xlabel("Root Mean Square Error\nMean RMSE: {}".format(round(mean(rmse_list), 4)))
     plt.ylabel("Occurrence")
     plt.title("The RMSE Distribution Histogram")

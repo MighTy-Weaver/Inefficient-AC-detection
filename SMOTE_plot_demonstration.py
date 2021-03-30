@@ -10,9 +10,11 @@ import pandas as pd
 from imblearn.over_sampling import SMOTE
 from tqdm import tqdm
 
+folder_name = 'Test_R2_2021_03_30_12_27_42'
+
 # Make the folder to store the result
-if not os.path.exists('./SMOTE_room/'):
-    os.mkdir('./SMOTE_room/')
+if not os.path.exists('./{}/SMOTE_room/'.format(folder_name)):
+    os.mkdir('./{}/SMOTE_room/'.format(folder_name))
 
 # Ignore the warnings.
 warnings.filterwarnings('ignore')
@@ -41,7 +43,7 @@ for room in tqdm(data['Location'].unique()):
     plt.xlabel("AC value")
     plt.ylabel("Occurrence")
     plt.title("AC Value Distribution for Room {} Before SMOTE".format(room))
-    plt.savefig('./SMOTE_room/room{}before.png'.format(room))
+    plt.savefig('./{}/SMOTE_room/room{}before.png'.format(folder_name, room))
     plt.clf()
 
     AC_before.extend(list(data_room['AC']))
@@ -60,7 +62,7 @@ for room in tqdm(data['Location'].unique()):
     plt.xlabel("AC value")
     plt.ylabel("Occurrence")
     plt.title("AC Value Distribution for Room {} After SMOTE".format(room))
-    plt.savefig('./SMOTE_room/room{}after.png'.format(room))
+    plt.savefig('./{}/SMOTE_room/room{}after.png'.format(folder_name, room))
     plt.clf()
 
     AC_after.extend(room_data_smote['AC'])
@@ -70,12 +72,12 @@ plt.hist(AC_before, bins=100, facecolor="blue", edgecolor="black", align='mid')
 plt.xlabel("Hourly AC Electricity Consumption/kWh")
 plt.ylabel("Number of Samples")
 plt.ylim(ymax=12500, ymin=0)
-plt.savefig('./SMOTE_Before.png', bbox_inches='tight')
+plt.savefig('./{}/SMOTE_Before.png'.format(folder_name), bbox_inches='tight')
 plt.clf()
 
 plt.hist(AC_after, bins=100, facecolor="blue", edgecolor="black", align='mid')
 plt.xlabel("Hourly AC Electricity Consumption/kWh")
 plt.ylabel("Number of Samples")
 plt.ylim(ymax=12500, ymin=0)
-plt.savefig('./SMOTE_After.png', bbox_inches='tight')
+plt.savefig('./{}/SMOTE_After.png'.format(folder_name), bbox_inches='tight')
 plt.clf()
