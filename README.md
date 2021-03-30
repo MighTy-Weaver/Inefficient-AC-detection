@@ -12,7 +12,7 @@ The experiment is conducted under: Windows 10 with Python 3.7/3.8 as the develop
 Use the following code segment to install all the required packages:
 
 ```python
-pip install pandas tqdm matplotlib numpy seaborn statistics shap imbalanced-learn xgboost scikit-learn
+pip install -r requirements.txt
 ```
 
 The following code segment is for updating the *pip*:
@@ -36,7 +36,7 @@ data is compiled from different categories of data.
 
 Again, you must have all the packages above installed.
 
-Run the `room_xgboost_training.py` to train the model, we use xgboost squared regressor and cross validation to do the
+Run the `training_xgboost_model.py` to train the model, we use xgboost squared regressor and cross validation to do the
 training. Each room's model has been boosted for 300 rounds under 10 folds of cross-validation, and we used
 the [SMOTE](https://doi.org/10.1613/jair.953) algorithm to help with the imbalance distribution of the data.
 
