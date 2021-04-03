@@ -41,18 +41,18 @@ training. Each room's model has been boosted for 300 rounds under 10 folds of cr
 the [SMOTE](https://doi.org/10.1613/jair.953) algorithm to help with the imbalance distribution of the data.
 
 Here is a simple demonstration of the data distribution before the [SMOTE](https://doi.org/10.1613/jair.953) algorithm.
-![SMOTE_before](SMOTE_Before.png)
+![SMOTE_before](demo/SMOTE_Before.png)
 
 After the [SMOTE](https://doi.org/10.1613/jair.953) algorithm, the distribution for AC below or above 0.7 is balanced.
-![SMOTE_after](SMOTE_After.png)
+![SMOTE_after](demo/SMOTE_After.png)
 
 Models will be dumped into `models` folder, and two csv files will be generated, recording the information about results
 after cross validation and the real-prediction value of each room.
 
 We provide some statistical results by the XGBoost models.
-![R2 Score Distribution Histogram](R2Dis.png)
-![RMSE Distribution Histogram](RMSEDis.png)
-![MSE Distribution Histogram](MSEDis.png)
+![R2 Score Distribution Histogram](demo/R2Dis.png)
+![RMSE Distribution Histogram](demo/RMSEDis.png)
+![MSE Distribution Histogram](demo/MSEDis.png)
 ## 4. Result Visualization
 
 After you've trained the models, run the `prediction_processing.py` to generate the visual graphs of the result.
@@ -70,7 +70,7 @@ At the same time, there are also some codes for other visualizations used in the
 SMOTE, `room_comparison_plotting.py` is for comparison among high/mid/low efficiency ACs.
 
 In general, this a plot for our result:
-![Room Graph](Room_dis.png)
+![Room Graph](demo/Room_dis.png)
 
 ## 5. Acknowledgement
 
