@@ -2,24 +2,14 @@
 # Models are dumped into ./models and results are dumped into two csv files in the current work directory.
 
 import argparse
-import json
-import os
-import pickle
 import warnings
-from datetime import datetime
-from typing import Tuple
 
 import numpy as np
 import pandas as pd
-import xgboost as xgb
-from imblearn.over_sampling import SMOTE
-from sklearn.model_selection import KFold
-from tqdm import tqdm
-from xgboost import DMatrix, cv
 
 # Set up an argument parser to decide the metric function
 parser = argparse.ArgumentParser()
-parser.add_argument("--metric", choices=['R2', 'RMSE', '10acc', 'MSE'], type=str, required=False, default='R2',
+parser.add_argument("--metric", choices=['1-R2', 'RMSE', '10acc', 'MSE'], type=str, required=False, default='1-R2',
                     help="The objective metric you want to use to train the XGBoost model")
 parser.add_argument("--log", choices=[0, 1, 100], type=int, required=False, default=False,
                     help="Whether to print out the training progress")
@@ -33,14 +23,16 @@ pd.set_option('display.max_rows', None)
 # Load the data with a positive AC electricity consumption value, and drop the time data as we don't need them
 data = pd.read_csv("summer_data_compiled.csv", index_col=0)
 data = data[data.AC > 0].drop(['Time', 'Date', 'Hour'], axis=1).reset_index(drop=True)
-
+for i in data['Location'].unique():
+    print(i, len(data[data.Location == i]))
+raise Exception("Error")
 # Create some directory to store the models and future analysis figures.
 log_folder_name = "Test_{}_{}".format(args.metric, datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
 os.mkdir('./{}'.format(log_folder_name))
 os.mkdir('./{}/models/'.format(log_folder_name))
 
 
-# Define our objective functions
+# Define our evaluation functions
 def ten_percent_accuracy(predt: np.ndarray, dtrain: DMatrix) -> Tuple[str, float]:
     total = len(predt)
     truth_value = dtrain.get_label()
@@ -68,7 +60,7 @@ def R2(predt: np.ndarray, dtrain: DMatrix) -> Tuple[str, float]:
     return "1-R2", 1 - R2
 
 
-objective_dict = {'RMSE': RMSE, 'R2': R2, 'MSE': MSE, '10acc': ten_percent_accuracy}
+objective_dict = {'RMSE': RMSE, '1-R2': R2, 'MSE': MSE, '10acc': ten_percent_accuracy}
 
 print("Start Training The Models")
 # Create two dataframes to store the result during the training and after the training.
@@ -103,7 +95,7 @@ for room in tqdm(data['Location'].unique()):
 
     # setup our training parameters and a model variable as model checkpoint
     param_dict = {'objective': 'reg:squarederror', 'max_depth': 10, 'reg_alpha': 7, 'min_child_weight': 0.1,
-                  'colsample_bytree': 0.8, 'learning_rate': 0.04}
+                  'colsample_bytree': 0.8, 'learning_rate': 0.06}
     xgb_model = None
 
     # We use KFold in scikit-learn as our cross-validation mechanism. 10 folds is used for each room.
@@ -116,11 +108,11 @@ for room in tqdm(data['Location'].unique()):
         # If there is already a checkpoint model, we'll keep training the checkpoint,
         # Otherwise, it will train from the beginning. It will ultimately bring us the cross-validated xgboost model.
         if xgb_model is None:
-            xgb_model = xgb.train(params=param_dict, dtrain=input_matrix, num_boost_round=300, evals=watchlist,
+            xgb_model = xgb.train(params=param_dict, dtrain=input_matrix, num_boost_round=100, evals=watchlist,
                                   feval=objective_dict[args.metric], maximize=True, xgb_model=None,
                                   verbose_eval=args.log)
         else:
-            xgb_model = xgb.train(params=param_dict, dtrain=input_matrix, num_boost_round=300, evals=watchlist,
+            xgb_model = xgb.train(params=param_dict, dtrain=input_matrix, num_boost_round=100, evals=watchlist,
                                   feval=objective_dict[args.metric], maximize=True, xgb_model=xgb_model,
                                   verbose_eval=args.log)
     pickle.dump(xgb_model, open('./{}/models/{}.pickle.bat'.format(log_folder_name, room), 'wb'))

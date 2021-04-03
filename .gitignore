@@ -8,9 +8,13 @@
 /2020_data_compiled.csv
 /2020_data_initial.csv
 /all_data_without_wifi.csv
-/error.csv
-/prediction.csv
+/Original_Version_Models/error.csv
+/Original_Version_Models/prediction.csv
 /room_list_ with_AC_ status.docx
 /summer_data_compiled.csv
 /.idea/
 /Test_R2_2021_03_30_12_27_42/
+/Test_1-R2_2021_03_31_15_29_37/
+/Original_Version_Models/
+/data_number_plot.py
+/try.py

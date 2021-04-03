@@ -52,7 +52,7 @@ after cross validation and the real-prediction value of each room.
 We provide some statistical results by the XGBoost models.
 ![R2 Score Distribution Histogram](R2Dis.png)
 ![RMSE Distribution Histogram](RMSEDis.png)
-
+![MSE Distribution Histogram](MSEDis.png)
 ## 4. Result Visualization
 
 After you've trained the models, run the `prediction_processing.py` to generate the visual graphs of the result.

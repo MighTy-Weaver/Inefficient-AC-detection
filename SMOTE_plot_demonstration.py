@@ -10,7 +10,7 @@ import pandas as pd
 from imblearn.over_sampling import SMOTE
 from tqdm import tqdm
 
-folder_name = 'Test_R2_2021_03_30_12_27_42'
+folder_name = 'Test_1-R2_2021_03_31_15_29_37'
 
 # Make the folder to store the result
 if not os.path.exists('./{}/SMOTE_room/'.format(folder_name)):

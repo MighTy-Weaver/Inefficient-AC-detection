@@ -25,7 +25,7 @@ room_list = pd.read_csv('summer_data_compiled.csv')['Location'].unique()
 plt.rc('font', family='Times New Roman')
 plt.rcParams["savefig.bbox"] = "tight"
 
-folder_name = 'Test_R2_2021_03_30_12_27_42'
+folder_name = 'Original_Version_Models'
 
 
 # Define our own original data loader
@@ -42,7 +42,7 @@ def original_dataloader(room: int):
     room_data_smote, smote_split = model_smote.fit_resample(X, y)
     room_data_smote = pd.concat([room_data_smote, smote_split], axis=1)
     y = room_data_smote['AC']
-    X = room_data_smote.drop(['AC', 'Location', 'SMOTE_split'], axis=1)
+    X = room_data_smote.drop(['AC', 'Location'], axis=1)
     return X, y
 
 
@@ -71,14 +71,14 @@ def view_shap_importance(room: int):
 
 
 # This is the function to calculate the RMSE value of a room, based on the model's predictions.
-def calculate_R2_RMSE(room: int):
+def calculate_R2_MSE_RMSE(room: int):
     data = pd.read_csv('./{}/prediction.csv'.format(folder_name), index_col=None)
     data = data[data.room == room].reset_index(drop=True)
     real = json.loads(data.loc[0, 'real'])
     predict = json.loads(data.loc[0, 'predict'])
     square_sum = sum([(real[i] - predict[i]) ** 2 for i in range(len(real))])
     R2 = r2_score(real, predict)
-    return R2, sqrt(square_sum / len(real))
+    return R2, square_sum / len(real), sqrt(square_sum / len(real))
 
 
 # This function plots the interacted shapley value for each room's temperature and humidity.
@@ -123,14 +123,15 @@ def plot_distribution(room: int):
 
 # This is the function to plot the error and root mean square error distribution of all the rooms.
 def plot_error_distribution():
-    r2_list, rmse_list = [], []
+    r2_list, mse_list, rmse_list = [], [], []
     # Looping through all the room and collect the statistics we need.
     for room_f in room_list:
         if room_f == 309 or room_f == 312 or room_f == 917 or room_f == 1001:
             continue
-        r2, rmse = calculate_R2_RMSE(room_f)
+        r2, mse, rmse = calculate_R2_MSE_RMSE(room_f)
         r2_list.append(r2)
         rmse_list.append(rmse)
+        mse_list.append(mse)
     plt.rcParams.update({'font.size': 15})
     # Use the historgram in matplotlib to plot the accuracy distribution histogram.
     plt.hist(r2_list, bins=50, density=True, facecolor="blue", edgecolor="black", alpha=0.7)
@@ -140,11 +141,17 @@ def plot_error_distribution():
     plt.savefig('./{}/R2Dis.png'.format(folder_name), bbox_inches='tight')
     plt.clf()
     # Use the same to plot the root mean square error distribution histogram.
-    plt.hist(rmse_list, bins=40, density=True, facecolor="blue", edgecolor="black", alpha=0.7)
+    plt.hist(rmse_list, bins=50, density=True, facecolor="blue", edgecolor="black", alpha=0.7)
     plt.xlabel("Root Mean Square Error\nMean RMSE: {}".format(round(mean(rmse_list), 4)))
     plt.ylabel("Occurrence")
     plt.title("The RMSE Distribution Histogram")
     plt.savefig('./{}/RMSEDis.png'.format(folder_name), bbox_inches='tight')
+    plt.clf()
+    plt.hist(mse_list, bins=50, density=True, facecolor="blue", edgecolor="black", alpha=0.7)
+    plt.xlabel("Mean Square Error\nMean MSE: {}".format(round(mean(mse_list), 4)))
+    plt.ylabel("Occurrence")
+    plt.title("The MSE Distribution Histogram")
+    plt.savefig('./{}/MSEDis.png'.format(folder_name), bbox_inches='tight')
     plt.clf()
 
 
