@@ -26,7 +26,7 @@ python -m pip install --upgrade pip
 ***Due to the privacy issues, the dataset will not be made open to public.***
 
 However, we still provide a 200
-lines [sample version](https://github.com/MighTy-Weaver/Inefficient-AC-detection/blob/main/sample_data.csv) of the full
+lines [sample version](https://github.com/MighTy-Weaver/Inefficient-AC-detection/blob/main/demo/sample_data.csv) of the full
 dataset to demonstrate the formation of our experimenting data, and you can check the `data_compilation.py` for how our
 data is compiled from different categories of data.
 

@@ -2,10 +2,20 @@
 # Models are dumped into ./models and results are dumped into two csv files in the current work directory.
 
 import argparse
+import json
+import os
+import pickle
 import warnings
+from datetime import datetime
+from typing import Tuple
 
 import numpy as np
 import pandas as pd
+import xgboost as xgb
+from imblearn.over_sampling import SMOTE
+from sklearn.model_selection import KFold
+from tqdm import tqdm
+from xgboost import DMatrix, cv
 
 # Set up an argument parser to decide the metric function
 parser = argparse.ArgumentParser()
@@ -23,9 +33,7 @@ pd.set_option('display.max_rows', None)
 # Load the data with a positive AC electricity consumption value, and drop the time data as we don't need them
 data = pd.read_csv("summer_data_compiled.csv", index_col=0)
 data = data[data.AC > 0].drop(['Time', 'Date', 'Hour'], axis=1).reset_index(drop=True)
-for i in data['Location'].unique():
-    print(i, len(data[data.Location == i]))
-raise Exception("Error")
+
 # Create some directory to store the models and future analysis figures.
 log_folder_name = "Test_{}_{}".format(args.metric, datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
 os.mkdir('./{}'.format(log_folder_name))
