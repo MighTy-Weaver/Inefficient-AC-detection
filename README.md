@@ -52,7 +52,7 @@ after cross validation and the real-prediction value of each room.
 We provide some statistical results by the XGBoost models.
 ![R2 Score Distribution Histogram](demo/R2_Dis.png)
 ![RMSE Distribution Histogram](demo/RMSE_Dis.png)
-![819Prediction](demo/room_demo.png)
+![819Prediction](demo/Room_demo.png)
 
 ## 4. Result Visualization
 
