@@ -12,18 +12,13 @@ The experiment is conducted under: Windows 10 with Python 3.7/3.8 as the develop
 Use the following code segment to install all the required packages:
 
 ```python
-pip
-install - r
-requirements.txt
+pip install - r requirements.txt
 ```
 
 The following code segment is for updating the *pip*:
 
 ```python
-python - m
-pip
-install - -upgrade
-pip
+python - m pip install - -upgrade pip
 ```
 
 ## 2. Data Compilation
@@ -57,7 +52,7 @@ after cross validation and the real-prediction value of each room.
 We provide some statistical results by the XGBoost models.
 ![R2 Score Distribution Histogram](demo/R2_Dis.png)
 ![RMSE Distribution Histogram](demo/RMSE_Dis.png)
-![819Prediction](demo/819.png)
+![819Prediction](demo/room_demo.png)
 
 ## 4. Result Visualization
 
