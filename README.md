@@ -12,13 +12,18 @@ The experiment is conducted under: Windows 10 with Python 3.7/3.8 as the develop
 Use the following code segment to install all the required packages:
 
 ```python
-pip install -r requirements.txt
+pip
+install - r
+requirements.txt
 ```
 
 The following code segment is for updating the *pip*:
 
 ```python
-python -m pip install --upgrade pip
+python - m
+pip
+install - -upgrade
+pip
 ```
 
 ## 2. Data Compilation
@@ -26,9 +31,9 @@ python -m pip install --upgrade pip
 ***Due to the privacy issues, the dataset will not be made open to public.***
 
 However, we still provide a 200
-lines [sample version](https://github.com/MighTy-Weaver/Inefficient-AC-detection/blob/main/demo/sample_data.csv) of the full
-dataset to demonstrate the formation of our experimenting data, and you can check the `data_compilation.py` for how our
-data is compiled from different categories of data.
+lines [sample version](https://github.com/MighTy-Weaver/Inefficient-AC-detection/blob/main/demo/sample_data.csv) of the
+full dataset to demonstrate the formation of our experimenting data, and you can check the `data_compilation.py` for how
+our data is compiled from different categories of data.
 
 *Remarks: Please notice that the `Location` in `sample_data.csv` are set to 0 for privacy.*
 
@@ -50,8 +55,8 @@ Models will be dumped into `models` folder, and two csv files will be generated,
 after cross validation and the real-prediction value of each room.
 
 We provide some statistical results by the XGBoost models.
-![R2 Score Distribution Histogram](demo/R2Dis.png)
-![RMSE Distribution Histogram](demo/RMSEDis.png)
+![R2 Score Distribution Histogram](demo/R2_Dis.png)
+![RMSE Distribution Histogram](demo/RMSE_Dis.png)
 
 ## 4. Result Visualization
 
