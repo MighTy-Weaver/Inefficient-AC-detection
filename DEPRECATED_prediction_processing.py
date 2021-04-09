@@ -12,8 +12,8 @@ from statistics import mean
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import seaborn
 import shap
+from imblearn.over_sampling import SMOTE
 from matplotlib import cm
 from matplotlib.colors import ListedColormap
 from sklearn.metrics import r2_score
@@ -25,7 +25,7 @@ room_list = pd.read_csv('summer_data_compiled.csv')['Location'].unique()
 plt.rc('font', family='Times New Roman')
 plt.rcParams["savefig.bbox"] = "tight"
 
-folder_name = 'Test_1-R2_2021_04_09_09_26_38'
+folder_name = 'Original_Version_Models'
 
 
 # Define our own original data loader
@@ -35,8 +35,14 @@ def original_dataloader(room: int):
     parameter."""
     data = pd.read_csv('summer_data_compiled.csv', index_col=0).drop(['Time', 'Hour', 'Date'], axis=1)
     room_data = data[data.Location == room]
-    y = room_data['AC']
-    X = room_data.drop(['AC', 'Location'], axis=1)
+    room_data['SMOTE_split'] = (room_data['AC'] > 0.7).astype('int')
+    X = room_data.drop(['SMOTE_split'], axis=1)
+    y = room_data['SMOTE_split']
+    model_smote = SMOTE(random_state=621, k_neighbors=3)
+    room_data_smote, smote_split = model_smote.fit_resample(X, y)
+    room_data_smote = pd.concat([room_data_smote, smote_split], axis=1)
+    y = room_data_smote['AC']
+    X = room_data_smote.drop(['AC', 'Location'], axis=1)
     return X, y
 
 
@@ -99,8 +105,7 @@ def plot_distribution(room: int):
     newcolors[128:, :] = np.flipud(newcolors[128:, :])
     newcmp = ListedColormap(newcolors)
     # Use the scatter plot to plot the distribution with our own color bar.
-    plt.scatter(real, predict, c=real - predict, marker='o', label="(Observation, Prediction)", s=10, cmap=newcmp,
-                vmin=-0.8,
+    plt.scatter(real, predict, c=real - predict, marker='o', label="(Real, Prediction)", s=10, cmap=newcmp, vmin=-0.8,
                 vmax=0.8)
     real_range = np.linspace(min(real), max(real))
     # Plot the identity line of y=x
@@ -108,9 +113,9 @@ def plot_distribution(room: int):
     plt.title("Prediction Validation Graph of Room {}".format(room))
     plt.ylabel("Prediction")
     plt.legend(frameon=False)
-    plt.colorbar(label="Error (Observation - Prediction)")
+    plt.colorbar(label="Error (Real Value - Prediction)")
     plt.xlabel(
-        "Observation\nR2 score: {}\nRoot Mean Square Error: {}".format(round(r2, 4), round(rmse, 4)))
+        "Original AC\nR2 score: {}\nRoot Mean Square Error: {}".format(round(r2, 4), round(rmse, 4)))
     plt.savefig("./{}/distribution_plot/room{}.png".format(folder_name, room), bbox_inches='tight')
     # plt.show()
     plt.clf()
@@ -118,61 +123,36 @@ def plot_distribution(room: int):
 
 # This is the function to plot the error and root mean square error distribution of all the rooms.
 def plot_error_distribution():
-    r2_list, rmse_list = [], []
-    stat_log = pd.read_csv('./{}/error.csv'.format(folder_name), index_col=None)
+    r2_list, mse_list, rmse_list = [], [], []
     # Looping through all the room and collect the statistics we need.
     for room_f in room_list:
         if room_f == 309 or room_f == 312 or room_f == 917 or room_f == 1001:
             continue
-        if 1 - stat_log[stat_log.room == room_f].reset_index(drop=True).loc[0, 'test-1-R2-mean'] > 0:
-            r2_list.append(1 - stat_log[stat_log.room == room_f].reset_index(drop=True).loc[0, 'test-1-R2-mean'])
-            rmse_list.append(stat_log[stat_log.room == room_f].reset_index(drop=True).loc[0, 'test-rmse-mean'])
-        else:
-            continue
-    r2_mean, r2_std = np.mean(r2_list), np.std(r2_list)
-    rmse_mean, rmse_std = np.mean(rmse_list), np.std(rmse_list)
+        r2, mse, rmse = calculate_R2_MSE_RMSE(room_f)
+        r2_list.append(r2)
+        rmse_list.append(rmse)
+        mse_list.append(mse)
     plt.rcParams.update({'font.size': 15})
-
     # Use the historgram in matplotlib to plot the accuracy distribution histogram.
-    fig, ax = plt.subplots()
-    n, r2_bins, patches = ax.hist(r2_list, bins=50, density=True, facecolor="blue", rwidth=0.8, alpha=0.7)
-    y = ((1 / (np.sqrt(2 * np.pi) * r2_std)) *
-         np.exp(-0.5 * (1 / r2_std * (r2_bins - r2_mean)) ** 2))
-    ax.plot(r2_bins, y, '--')
+    plt.hist(r2_list, bins=50, density=True, facecolor="blue", edgecolor="black", alpha=0.7)
     plt.xlabel("R2 Score\nMean R2 Score: {}".format(round(mean(r2_list), 2)))
-    plt.ylabel("Frequency")
+    plt.ylabel("Occurrence")
     plt.title("The R2 Score Distribution Histogram")
-    plt.savefig('./{}/R2Dis_positive_only.png'.format(folder_name), bbox_inches='tight')
+    plt.savefig('./{}/R2Dis.png'.format(folder_name), bbox_inches='tight')
     plt.clf()
-
     # Use the same to plot the root mean square error distribution histogram.
-    fig, ax = plt.subplots()
-    _, rmse_bins, _ = ax.hist(rmse_list, bins=50, density=True, facecolor="blue", rwidth=0.8, alpha=0.7)
-    y = ((1 / (np.sqrt(2 * np.pi) * rmse_std)) *
-         np.exp(-0.5 * (1 / rmse_std * (rmse_bins - rmse_mean)) ** 2))
-    ax.plot(rmse_bins, y, '--')
+    plt.hist(rmse_list, bins=50, density=True, facecolor="blue", edgecolor="black", alpha=0.7)
     plt.xlabel("Root Mean Square Error\nMean RMSE: {}".format(round(mean(rmse_list), 4)))
-    plt.ylabel("Frequency")
+    plt.ylabel("Occurrence")
     plt.title("The RMSE Distribution Histogram")
-    plt.savefig('./{}/RMSEDis_positive_only.png'.format(folder_name), bbox_inches='tight')
+    plt.savefig('./{}/RMSEDis.png'.format(folder_name), bbox_inches='tight')
     plt.clf()
-
-
-def plot_room_number_data_and_R2():
-    stat_log = pd.read_csv('./{}/error.csv'.format(folder_name), index_col=None)
-    predic = pd.read_csv('./{}/prediction.csv'.format(folder_name), index_col=None)
-    r2_list, rmse_list, data_number = [], [], []
-    for room_f in room_list:
-        if room_f == 309 or room_f == 312 or room_f == 917 or room_f == 1001:
-            continue
-        r2_list.append(1 - stat_log[stat_log.room == room_f].reset_index(drop=True).loc[0, 'test-1-R2-mean'])
-        rmse_list.append(stat_log[stat_log.room == room_f].reset_index(drop=True).loc[0, 'test-rmse-mean'])
-        data_number.append(len(json.loads(predic[predic.room == room_f].reset_index(drop=True).loc[0, 'real'])))
-    seaborn.regplot(x=data_number, y=r2_list, scatter=True, label="R2 Score", marker="x", color="red",
-                    scatter_kws={"s": 15})
-    seaborn.regplot(x=data_number, y=rmse_list, label="RMSE", marker="o", scatter_kws={"s": 15})
-    plt.legend()
-    plt.savefig('./{}/data_number.png'.format(folder_name), bbox_inches='tight')
+    plt.hist(mse_list, bins=50, density=True, facecolor="blue", edgecolor="black", alpha=0.7)
+    plt.xlabel("Mean Square Error\nMean MSE: {}".format(round(mean(mse_list), 4)))
+    plt.ylabel("Occurrence")
+    plt.title("The MSE Distribution Histogram")
+    plt.savefig('./{}/MSEDis.png'.format(folder_name), bbox_inches='tight')
+    plt.clf()
 
 
 # The main function
@@ -188,7 +168,6 @@ if __name__ == "__main__":
         if room == 309 or room == 312 or room == 917 or room == 1001:
             continue
         # view_shap_importance(room)  # This function will pop up a demo window for each room.
-    #     plot_shap_interact(room)
-    #     plot_distribution(room)
-    # plot_error_distribution()
-    plot_room_number_data_and_R2()
+        plot_shap_interact(room)
+        plot_distribution(room)
+    plot_error_distribution()
