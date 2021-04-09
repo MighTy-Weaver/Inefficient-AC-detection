@@ -19,3 +19,5 @@
 /data_number_plot.py
 /try.py
 /Test*/
+/DEPRECATED_prediction_processing.py
+/DEPRECATED_training_xgboost_model.py
