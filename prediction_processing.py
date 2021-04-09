@@ -188,7 +188,7 @@ if __name__ == "__main__":
         if room == 309 or room == 312 or room == 917 or room == 1001:
             continue
         # view_shap_importance(room)  # This function will pop up a demo window for each room.
-    #     plot_shap_interact(room)
-    #     plot_distribution(room)
-    # plot_error_distribution()
+        plot_shap_interact(room)
+        plot_distribution(room)
+    plot_error_distribution()
     plot_room_number_data_and_R2()
