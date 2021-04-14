@@ -14,6 +14,7 @@ import numpy as np
 import pandas as pd
 import seaborn
 import shap
+from imblearn.over_sampling import SMOTE
 from matplotlib import cm
 from matplotlib.colors import ListedColormap
 from sklearn.metrics import r2_score
@@ -25,7 +26,7 @@ room_list = pd.read_csv('summer_data_compiled.csv')['Location'].unique()
 plt.rc('font', family='Times New Roman')
 plt.rcParams["savefig.bbox"] = "tight"
 
-folder_name = 'Test_1-R2_2021_04_09_09_26_38'
+folder_name = 'Test_R2_SW_SMOTE'
 
 
 # Define our own original data loader
@@ -35,8 +36,21 @@ def original_dataloader(room: int):
     parameter."""
     data = pd.read_csv('summer_data_compiled.csv', index_col=0).drop(['Time', 'Hour', 'Date'], axis=1)
     room_data = data[data.Location == room]
-    y = room_data['AC']
-    X = room_data.drop(['AC', 'Location'], axis=1)
+
+    # Label all the AC data by 0.7, all AC above 0.7 will be marked as 1, otherwise 0. Split into X and y
+    room_data['SMOTE_split'] = (room_data['AC'] > 0.7).astype('int')
+    X = room_data.drop(['SMOTE_split'], axis=1)
+    y = room_data['SMOTE_split']
+
+    # Run the SMOTE algorithm and retrieve the result.
+    model_smote = SMOTE(random_state=621, k_neighbors=3)
+    room_data_smote, smote_split = model_smote.fit_resample(X, y)
+
+    # concat the result from SMOTE and split the result into X and y for training.
+    room_data_smote = pd.concat([room_data_smote, smote_split], axis=1)
+    y = room_data_smote['AC']
+    X = room_data_smote.drop(['AC', 'Location', 'SMOTE_split'], axis=1)
+
     return X, y
 
 

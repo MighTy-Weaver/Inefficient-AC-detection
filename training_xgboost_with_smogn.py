@@ -11,7 +11,6 @@ from typing import Tuple
 
 import numpy as np
 import pandas as pd
-import smogn
 import xgboost as xgb
 from sklearn.utils import compute_sample_weight
 from tqdm import tqdm
@@ -33,16 +32,11 @@ pd.set_option('display.max_rows', None)
 # Load the data with a positive AC electricity consumption value, and drop the time data as we don't need them
 data = pd.read_csv("summer_data_compiled.csv", index_col=0)
 data = data[data.AC > 0].drop(['Time', 'Date', 'Hour'], axis=1).reset_index(drop=True)
-# print(data.shape)
-# data = smogn.smoter(data=data, y='AC').reset_index(drop=True)
-# data.to_csv('./summer_data_smogn.csv', index=False)
-# print(data.shape)
-# print(list(data))
+
 # Create some directory to store the models and future analysis figures.
 log_folder_name = "Test_{}_{}".format(args.metric, datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
 os.mkdir('./{}'.format(log_folder_name))
 os.mkdir('./{}/models/'.format(log_folder_name))
-os.mkdir('./{}/SMOGN/'.format(log_folder_name))
 
 
 # Define our evaluation functions
@@ -90,15 +84,14 @@ for room in tqdm(data['Location'].unique()):
         continue
 
     # We extract the data of particular room and run the SMOTE algorithm on it.
-    room_data = data[data.Location == room].drop(['Location'], axis=1).reset_index(drop=True)
+    room_data = data[data.Location == room]
 
     if len(room_data) < 500:
         continue
 
-    room_data_smogn = smogn.smoter(data=room_data, y='AC', rel_coef=0.3)
-    room_data_smogn.to_csv('./{}/SMOGN/{}.csv'.format(log_folder_name, room))
-    y = room_data_smogn['AC']
-    X = room_data_smogn.drop(['AC'], axis=1)
+    room_data = pd.read_csv('./SMOGN_processed/{}.csv'.format(room), index_col=0)
+    y = room_data['AC']
+    X = room_data.drop(['AC'], axis=1)
 
     # Apply the sample weight strategy to the AC value
     class_sample = pd.cut(y, bins=10)
@@ -117,7 +110,7 @@ for room in tqdm(data['Location'].unique()):
                        shuffle=True, seed=621, feval=objective_dict[args.metric], maximize=True)
 
     watchlist = [(data_matrix, 'eval'), (data_matrix, 'train')]
-    xgb_model = xgb.train(params=param_dict, dtrain=data_matrix, num_boost_round=200, evals=watchlist,
+    xgb_model = xgb.train(params=param_dict, dtrain=data_matrix, num_boost_round=100, evals=watchlist,
                           verbose_eval=args.log, feval=objective_dict[args.metric])
     pickle.dump(xgb_model, open('./{}/models/{}.pickle.bat'.format(log_folder_name, room), 'wb'))
 
