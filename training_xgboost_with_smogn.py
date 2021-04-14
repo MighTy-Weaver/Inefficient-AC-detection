@@ -106,7 +106,7 @@ for room in tqdm(data['Location'].unique()):
     # Build another full data matrix for the built-in cross validation function to work.
     data_matrix = DMatrix(data=X, label=y, weight=weight)
     # Use the built-in cv function to do the cross validation, still with ten folds, this will return us the results.
-    xgb_cv_result = cv(dtrain=data_matrix, params=param_dict, as_pandas=True, num_boost_round=300, nfold=10,
+    xgb_cv_result = cv(dtrain=data_matrix, params=param_dict, as_pandas=True, num_boost_round=300, nfold=3,
                        shuffle=True, seed=621, feval=objective_dict[args.metric], maximize=True)
 
     watchlist = [(data_matrix, 'eval'), (data_matrix, 'train')]
