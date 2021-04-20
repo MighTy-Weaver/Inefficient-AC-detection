@@ -6,7 +6,6 @@ import json
 import os
 import pickle
 import warnings
-from datetime import datetime
 from typing import Tuple
 
 import numpy as np
@@ -36,10 +35,12 @@ data = pd.read_csv("summer_data_compiled.csv", index_col=0)
 data = data[data.AC > 0].drop(['Time', 'Date', 'Hour'], axis=1).reset_index(drop=True)
 
 # Create some directory to store the models and future analysis figures.
-log_folder_name = "Test_{}_{}".format(args.metric, datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
-previous_parameter_folder = "Test_1-R2_2021_04_20_15_44_56"
-os.mkdir('./{}'.format(log_folder_name))
-os.mkdir('./{}/models/'.format(log_folder_name))
+# log_folder_name = "Test_{}_{}".format(args.metric, datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
+log_folder_name = "Test_R2_HYPEROPT"
+previous_parameter_folder = "Test_R2_HYPEROPT"
+if not os.path.exists('./{}/'.format(log_folder_name)):
+    os.mkdir('./{}'.format(log_folder_name))
+    os.mkdir('./{}/models/'.format(log_folder_name))
 
 
 # Define our evaluation functions
