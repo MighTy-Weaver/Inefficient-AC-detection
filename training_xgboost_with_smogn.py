@@ -98,8 +98,8 @@ for room in tqdm(data['Location'].unique()):
     weight = compute_sample_weight(class_weight="balanced", y=class_sample)
 
     # setup our training parameters and a model variable as model checkpoint
-    param_dict = {'objective': 'reg:squarederror', 'max_depth': 10, 'reg_alpha': 7, 'min_child_weight': 0.1,
-                  'colsample_bytree': 0.8, 'learning_rate': 0.06}
+    param_dict = {'objective': 'reg:squarederror', 'max_depth': 10, 'reg_alpha': 7, 'min_child_weight': 1,
+                  'colsample_bytree': 0.8, 'learning_rate': 0.005}
 
     X = X.to_numpy()
 
@@ -110,7 +110,7 @@ for room in tqdm(data['Location'].unique()):
                        shuffle=True, seed=621, feval=objective_dict[args.metric], maximize=True)
 
     watchlist = [(data_matrix, 'eval'), (data_matrix, 'train')]
-    xgb_model = xgb.train(params=param_dict, dtrain=data_matrix, num_boost_round=100, evals=watchlist,
+    xgb_model = xgb.train(params=param_dict, dtrain=data_matrix, num_boost_round=300, evals=watchlist,
                           verbose_eval=args.log, feval=objective_dict[args.metric])
     pickle.dump(xgb_model, open('./{}/models/{}.pickle.bat'.format(log_folder_name, room), 'wb'))
 

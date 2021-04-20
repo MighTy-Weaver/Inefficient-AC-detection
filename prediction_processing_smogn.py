@@ -25,7 +25,7 @@ room_list = pd.read_csv('summer_data_compiled.csv')['Location'].unique()
 plt.rc('font', family='Times New Roman')
 plt.rcParams["savefig.bbox"] = "tight"
 
-folder_name = 'Test_R2_SW_SMOGN'
+folder_name = 'Test_1-R2_2021_04_15_14_06_21'
 
 
 # Define our own original data loader
@@ -215,8 +215,8 @@ if __name__ == "__main__":
         if not os.path.exists('./{}/models/{}.pickle.bat'.format(folder_name, room)):
             continue
         # view_shap_importance(room)  # This function will pop up a demo window for each room.
-        # plot_shap_interact(room)
-        # plot_distribution(room)
+        plot_shap_interact(room)
+        plot_distribution(room)
     plot_error_distribution()
     plot_room_number_data_and_R2()
     plot_data_before_after_SMOTE()
