@@ -12,7 +12,6 @@ import numpy as np
 import pandas as pd
 import xgboost as xgb
 from hyperopt import fmin, tpe, hp, STATUS_OK, Trials
-from hyperopt.early_stop import no_progress_loss
 from sklearn.metrics import r2_score
 from tqdm import tqdm
 from xgboost import DMatrix, cv
@@ -36,8 +35,9 @@ data = data[data.AC > 0].drop(['Time', 'Date', 'Hour'], axis=1).reset_index(drop
 
 # Create some directory to store the models and future analysis figures.
 # log_folder_name = "Test_{}_{}".format(args.metric, datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
-log_folder_name = "Test_R2_HYPEROPT"
-previous_parameter_folder = "Test_R2_HYPEROPT"
+log_folder_name = "Test_R2_HYPEROPT_v2"
+previous_parameter_folder = ""
+
 if not os.path.exists('./{}/'.format(log_folder_name)):
     os.mkdir('./{}'.format(log_folder_name))
     os.mkdir('./{}/models/'.format(log_folder_name))
@@ -113,7 +113,7 @@ for room in tqdm(data['Location'].unique()):
     # Build another full data matrix for the built-in cross validation function to work.
     data_matrix = DMatrix(data=X, label=y)
 
-    # Corss_validation with hyperparameter tunning
+    # Cross_validation with hyper-parameter tuning
     space = {'max_depth': hp.quniform("max_depth", 3, 10, 1),
              'learning_rate': hp.uniform("learning_rate", 0.1, 2),
              'colsample_bytree': hp.uniform("colsample_bytree", 0.5, 1),
@@ -129,8 +129,7 @@ for room in tqdm(data['Location'].unique()):
         np.save('./{}/models/{}_parameter.npy'.format(log_folder_name, room), best_param_dict)
     else:
         trials = Trials()
-        best_hyperparams = fmin(fn=fobjective, space=space, algo=tpe.suggest, max_evals=200, trials=trials,
-                                early_stop_fn=no_progress_loss(50))
+        best_hyperparams = fmin(fn=fobjective, space=space, algo=tpe.suggest, max_evals=200, trials=trials)
 
         # setup our training parameters and a model variable as model checkpoint
         best_param_dict = {'objective': 'reg:squarederror', 'max_depth': int(best_hyperparams['max_depth']),
@@ -143,7 +142,7 @@ for room in tqdm(data['Location'].unique()):
         np.save('./{}/models/{}_parameter.npy'.format(log_folder_name, room), best_param_dict)
 
     # Use the built-in cv function to do the cross validation, still with ten folds, this will return us the results.
-    xgb_cv_result = cv(dtrain=data_matrix, params=best_param_dict, as_pandas=True, num_boost_round=200, nfold=10,
+    xgb_cv_result = cv(dtrain=data_matrix, params=best_param_dict, as_pandas=True, num_boost_round=300, nfold=10,
                        shuffle=True, seed=8000, feval=eval_dict[args.metric], maximize=True)
 
     watchlist = [(data_matrix, 'eval'), (data_matrix, 'train')]
