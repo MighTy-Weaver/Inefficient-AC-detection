@@ -80,9 +80,9 @@ def fobjective(space):
                           'objective': 'reg:squarederror'}
 
     xgb_cv_result = xgb.cv(dtrain=data_matrix, params=param_dict_tunning, nfold=5, early_stopping_rounds=30,
-                           as_pandas=True, num_boost_round=200, seed=8000, feval=R2)
+                           as_pandas=True, num_boost_round=200, seed=8000, feval=R2, maximize=True)
 
-    return {"loss": (xgb_cv_result["test-1-R2-mean"]).tail(1).iloc[0], "status": STATUS_OK}
+    return {"loss": (xgb_cv_result["test-R2-mean"]).tail(1).iloc[0], "status": STATUS_OK}
 
 
 eval_dict = {'RMSE': RMSE, 'R2': R2, 'MSE': MSE, '10acc': ten_percent_accuracy}
