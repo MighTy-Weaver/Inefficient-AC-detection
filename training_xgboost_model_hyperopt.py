@@ -18,7 +18,7 @@ from xgboost import DMatrix, cv
 
 # Set up an argument parser to decide the metric function
 parser = argparse.ArgumentParser()
-parser.add_argument("--metric", choices=['1-R2', 'RMSE', '10acc', 'MSE'], type=str, required=False, default='1-R2',
+parser.add_argument("--metric", choices=['R2', 'RMSE', '10acc', 'MSE'], type=str, required=False, default='R2',
                     help="The evaluation metric you want to use to train the XGBoost model")
 parser.add_argument("--log", choices=[0, 1, 100], type=int, required=False, default=0,
                     help="Whether to print out the training progress")
@@ -35,8 +35,8 @@ data = data[data.AC > 0].drop(['Time', 'Date', 'Hour'], axis=1).reset_index(drop
 
 # Create some directory to store the models and future analysis figures.
 # log_folder_name = "Test_{}_{}".format(args.metric, datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
-log_folder_name = "Test_R2_HYPEROPT_v2"
-previous_parameter_folder = ""
+log_folder_name = "Test_R2_HYPEROPT_v3"
+previous_parameter_folder = "Test_R2_HYPEROPT_v2"
 
 if not os.path.exists('./{}/'.format(log_folder_name)):
     os.mkdir('./{}'.format(log_folder_name))
@@ -65,7 +65,7 @@ def MSE(predt: np.ndarray, dtrain: DMatrix) -> Tuple[str, float]:
 def R2(predt: np.ndarray, dtrain: DMatrix) -> Tuple[str, float]:
     truth_value = dtrain.get_label()
     r2_value = r2_score(truth_value, predt)
-    return "1-R2", 1 - r2_value
+    return "R2", r2_value
 
 
 def fobjective(space):
@@ -85,7 +85,7 @@ def fobjective(space):
     return {"loss": (xgb_cv_result["test-1-R2-mean"]).tail(1).iloc[0], "status": STATUS_OK}
 
 
-eval_dict = {'RMSE': RMSE, '1-R2': R2, 'MSE': MSE, '10acc': ten_percent_accuracy}
+eval_dict = {'RMSE': RMSE, 'R2': R2, 'MSE': MSE, '10acc': ten_percent_accuracy}
 
 print("Start Training The Models")
 # Create two dataframes to store the result during the training and after the training.

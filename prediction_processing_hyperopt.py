@@ -19,7 +19,7 @@ from matplotlib.colors import ListedColormap
 from sklearn.metrics import r2_score
 from tqdm import tqdm
 
-folder_name = 'Test_R2_HYPEROPT'
+folder_name = 'Test_R2_HYPEROPT_v2'
 
 # Ignore the warnings, let pandas print the full message and do some overall settings for matplotlib.
 warnings.filterwarnings('ignore')
