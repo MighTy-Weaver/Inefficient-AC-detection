@@ -12,7 +12,9 @@ import numpy as np
 import pandas as pd
 import xgboost as xgb
 from hyperopt import fmin, tpe, hp, STATUS_OK, Trials
-from sklearn.metrics import r2_score
+from numpy.random import RandomState
+from sklearn.metrics import r2_score, mean_squared_error
+from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 from xgboost import DMatrix, cv
 
@@ -35,8 +37,8 @@ data = data[data.AC > 0].drop(['Time', 'Date', 'Hour'], axis=1).reset_index(drop
 
 # Create some directory to store the models and future analysis figures.
 # log_folder_name = "Test_{}_{}".format(args.metric, datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
-log_folder_name = "Test_R2_HYPEROPT_v3"
-previous_parameter_folder = "Test_R2_HYPEROPT_v2"
+log_folder_name = "Test_R2_HYPEROPT_v10"
+previous_parameter_folder = ""
 
 if not os.path.exists('./{}/'.format(log_folder_name)):
     os.mkdir('./{}'.format(log_folder_name))
@@ -53,8 +55,10 @@ def ten_percent_accuracy(predt: np.ndarray, dtrain: DMatrix) -> Tuple[str, float
 
 def RMSE(predt: np.ndarray, dtrain: DMatrix) -> Tuple[str, float]:
     truth_value = dtrain.get_label()
-    squared_error = sum([np.power(truth_value[i] - predt[i], 2) for i in range(len(predt))])
-    return "RMSE", float(np.sqrt(squared_error / len(predt)))
+    # squared_error = sum([np.power(truth_value[i] - predt[i], 2) for i in range(len(predt))])
+    # return "RMSE", float(np.sqrt(squared_error / len(predt)))
+    root_squard_error = mean_squared_error(truth_value, predt)
+    return "RMSE", root_squard_error
 
 
 def MSE(predt: np.ndarray, dtrain: DMatrix) -> Tuple[str, float]:
@@ -79,10 +83,11 @@ def fobjective(space):
                           'min_split_loss': space['min_split_loss'],
                           'objective': 'reg:squarederror'}
 
-    xgb_cv_result = xgb.cv(dtrain=data_matrix, params=param_dict_tunning, nfold=5, early_stopping_rounds=30,
-                           as_pandas=True, num_boost_round=200, seed=8000, feval=R2, maximize=True)
+    xgb_cv_result = xgb.cv(dtrain=data_matrix, params=param_dict_tunning, nfold=5,
+                           early_stopping_rounds=30, as_pandas=True, num_boost_round=200,
+                           seed=seed, metrics='rmse', maximize=False, shuffle=True)
 
-    return {"loss": (xgb_cv_result["test-R2-mean"]).tail(1).iloc[0], "status": STATUS_OK}
+    return {"loss": (xgb_cv_result["test-rmse-mean"]).tail(1).iloc[0], "status": STATUS_OK}
 
 
 eval_dict = {'RMSE': RMSE, 'R2': R2, 'MSE': MSE, '10acc': ten_percent_accuracy}
@@ -95,18 +100,20 @@ error_csv = pd.DataFrame(
              'test-rmse-std'])
 prediction_csv = pd.DataFrame(columns=['room', 'observation', 'prediction'])
 
+room_list = data['Location'].unique()
+# room_list = [828]
 # ranging through all the rooms and do the training and cross-validation for each room.
-for room in tqdm(data['Location'].unique()):
-
+for room in tqdm(room_list):
+    seed = 2030 + room
     # Four rooms have low quality data and we delete them manually
-    if room == 309 or room == 312 or room == 917 or room == 1001:
+    if room == 309 or room == 312 or room == 826 or room == 917 or room == 1001:
         continue
 
     # We extract the data of particular room and run the SMOTE algorithm on it.
     room_data = data[data.Location == room].drop(['Location'], axis=1).reset_index(drop=True)
 
-    y = room_data['AC']
-    X = room_data.drop(['AC'], axis=1)
+    y = room_data['AC'].fillna(method='pad')
+    X = room_data.drop(['AC'], axis=1).fillna(method='pad')
 
     X = X.to_numpy()
 
@@ -115,7 +122,7 @@ for room in tqdm(data['Location'].unique()):
 
     # Cross_validation with hyper-parameter tuning
     space = {'max_depth': hp.quniform("max_depth", 3, 10, 1),
-             'learning_rate': hp.uniform("learning_rate", 0.1, 2),
+             'learning_rate': hp.uniform("learning_rate", 0.1, 3),
              'colsample_bytree': hp.uniform("colsample_bytree", 0.5, 1),
              'min_child_weight': hp.quniform("min_child_weight", 1, 20, 1),
              'reg_alpha': hp.quniform("reg_alpha", 0, 100, 1),
@@ -129,7 +136,8 @@ for room in tqdm(data['Location'].unique()):
         np.save('./{}/models/{}_parameter.npy'.format(log_folder_name, room), best_param_dict)
     else:
         trials = Trials()
-        best_hyperparams = fmin(fn=fobjective, space=space, algo=tpe.suggest, max_evals=200, trials=trials)
+        best_hyperparams = fmin(fn=fobjective, space=space, algo=tpe.suggest, max_evals=400, trials=trials,
+                                rstate=RandomState(seed))
 
         # setup our training parameters and a model variable as model checkpoint
         best_param_dict = {'objective': 'reg:squarederror', 'max_depth': int(best_hyperparams['max_depth']),
@@ -142,28 +150,37 @@ for room in tqdm(data['Location'].unique()):
         np.save('./{}/models/{}_parameter.npy'.format(log_folder_name, room), best_param_dict)
 
     # Use the built-in cv function to do the cross validation, still with ten folds, this will return us the results.
-    xgb_cv_result = cv(dtrain=data_matrix, params=best_param_dict, as_pandas=True, num_boost_round=300, nfold=10,
-                       shuffle=True, seed=8000, feval=eval_dict[args.metric], maximize=True)
-
-    watchlist = [(data_matrix, 'eval'), (data_matrix, 'train')]
-
-    xgb_model = xgb.train(params=best_param_dict, dtrain=data_matrix, num_boost_round=300, evals=watchlist,
-                          verbose_eval=args.log, feval=eval_dict[args.metric])
-
-    pickle.dump(xgb_model, open('./{}/models/{}.pickle.bat'.format(log_folder_name, room), 'wb'))
+    xgb_cv_result = cv(dtrain=data_matrix, params=best_param_dict, nfold=5,
+                       early_stopping_rounds=30, as_pandas=True, num_boost_round=200,
+                       seed=seed, shuffle=True, feval=eval_dict[args.metric], maximize=True)
 
     xgb_cv_result['room'] = room
     error_csv.loc[len(error_csv)] = xgb_cv_result.loc[len(xgb_cv_result) - 1]
 
-    # Do the prediction on the full original dataset, and save both ground truth and prediction value into the dataframe
-    prediction = np.array(xgb_model.predict(data_matrix)).tolist()
-    real = np.array(y).tolist()
+    # Use one training_testing for ploting, and save both ground truth and prediction value into the dataframe
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=seed)
+    d_train = DMatrix(X_train, label=y_train)
+    d_test = DMatrix(X_test, label=y_test)
+
+    watchlist = [(d_test, 'eval'), (d_train, 'train')]
+
+    xgb_model_train_test = xgb.train(params=best_param_dict, dtrain=d_train, num_boost_round=200, evals=watchlist,
+                                     verbose_eval=args.log, xgb_model=None, feval=eval_dict[args.metric], maximize=True)
+
+    prediction = np.array(xgb_model_train_test.predict(d_test)).tolist()
+    real = np.array(y_test).tolist()
 
     prediction_csv.loc[len(prediction_csv)] = {'room': room, 'observation': json.dumps(real),
                                                'prediction': json.dumps(prediction)}
 
-    # dump the error dataframes into csv files.
+    # Dump the error dataframes into csv files.
     error_csv.to_csv('./{}/error.csv'.format(log_folder_name), index=False)
     prediction_csv.to_csv('./{}/prediction.csv'.format(log_folder_name), index=False)
+
+    # Develop a model using the whole orignial dataset, and save the model
+    xgb_model_full = xgb.train(params=best_param_dict, dtrain=data_matrix, num_boost_round=200, evals=watchlist,
+                               verbose_eval=args.log, xgb_model=None, feval=eval_dict[args.metric], maximize=True)
+
+    pickle.dump(xgb_model_full, open('./{}/models/{}.pickle.bat'.format(log_folder_name, room), 'wb'))
 
 print("Training finished!")

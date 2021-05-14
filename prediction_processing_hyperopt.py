@@ -19,7 +19,7 @@ from matplotlib.colors import ListedColormap
 from sklearn.metrics import r2_score
 from tqdm import tqdm
 
-folder_name = 'Test_R2_HYPEROPT_v2'
+folder_name = 'Test_R2_HYPEROPT_v3'
 
 # Ignore the warnings, let pandas print the full message and do some overall settings for matplotlib.
 warnings.filterwarnings('ignore')
@@ -110,7 +110,7 @@ def plot_distribution(room: int):
     plt.colorbar(label="Error (Observation - Prediction)")
     plt.xlabel(
         "Observation\nR2 score: {}\nRoot Mean Square Error: {}".format(
-            round(1 - room_error.loc[0, 'test-1-R2-mean'], 4), round(room_error.loc[0, 'test-rmse-mean'], 4)))
+            round(room_error.loc[0, 'test-R2-mean'], 4), round(room_error.loc[0, 'test-rmse-mean'], 4)))
     plt.savefig("./{}/distribution_plot/room{}.png".format(folder_name, room), bbox_inches='tight')
     # plt.show()
     plt.clf()
@@ -124,8 +124,8 @@ def plot_error_distribution():
     for room_f in room_list:
         if room_f == 309 or room_f == 312 or room_f == 917 or room_f == 1001:
             continue
-        if 1 - stat_log[stat_log.room == room_f].reset_index(drop=True).loc[0, 'test-1-R2-mean'] > 0:
-            r2_list.append(1 - stat_log[stat_log.room == room_f].reset_index(drop=True).loc[0, 'test-1-R2-mean'])
+        if stat_log[stat_log.room == room_f].reset_index(drop=True).loc[0, 'test-R2-mean'] > 0:
+            r2_list.append(stat_log[stat_log.room == room_f].reset_index(drop=True).loc[0, 'test-R2-mean'])
             rmse_list.append(stat_log[stat_log.room == room_f].reset_index(drop=True).loc[0, 'test-rmse-mean'])
         else:
             continue
@@ -165,7 +165,7 @@ def plot_room_number_data_and_R2():
     for room_f in room_list:
         if room_f == 309 or room_f == 312 or room_f == 917 or room_f == 1001:
             continue
-        r2_list.append(1 - stat_log[stat_log.room == room_f].reset_index(drop=True).loc[0, 'test-1-R2-mean'])
+        r2_list.append(stat_log[stat_log.room == room_f].reset_index(drop=True).loc[0, 'test-R2-mean'])
         rmse_list.append(stat_log[stat_log.room == room_f].reset_index(drop=True).loc[0, 'test-rmse-mean'])
         data_number.append(len(json.loads(predic[predic.room == room_f].reset_index(drop=True).loc[0, 'observation'])))
     seaborn.regplot(x=data_number, y=r2_list, scatter=True, label="R2 Score", marker="x", color="red",
