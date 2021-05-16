@@ -19,7 +19,7 @@ from matplotlib.colors import ListedColormap
 from sklearn.metrics import r2_score
 from tqdm import tqdm
 
-folder_name = 'Test_R2_HYPEROPT_v3'
+folder_name = 'Test_R2_HYPEROPT_v10'
 
 # Ignore the warnings, let pandas print the full message and do some overall settings for matplotlib.
 warnings.filterwarnings('ignore')
@@ -122,7 +122,7 @@ def plot_error_distribution():
     stat_log = pd.read_csv('./{}/error.csv'.format(folder_name), index_col=None)
     # Looping through all the room and collect the statistics we need.
     for room_f in room_list:
-        if room_f == 309 or room_f == 312 or room_f == 917 or room_f == 1001:
+        if room_f == 309 or room_f == 312 or room_f == 826 or room_f == 917 or room_f == 1001:
             continue
         if stat_log[stat_log.room == room_f].reset_index(drop=True).loc[0, 'test-R2-mean'] > 0:
             r2_list.append(stat_log[stat_log.room == room_f].reset_index(drop=True).loc[0, 'test-R2-mean'])
@@ -163,7 +163,7 @@ def plot_room_number_data_and_R2():
     predic = pd.read_csv('./{}/prediction.csv'.format(folder_name), index_col=None)
     r2_list, rmse_list, data_number = [], [], []
     for room_f in room_list:
-        if room_f == 309 or room_f == 312 or room_f == 917 or room_f == 1001:
+        if room_f == 309 or room_f == 312 or room_f == 826 or room_f == 917 or room_f == 1001:
             continue
         r2_list.append(stat_log[stat_log.room == room_f].reset_index(drop=True).loc[0, 'test-R2-mean'])
         rmse_list.append(stat_log[stat_log.room == room_f].reset_index(drop=True).loc[0, 'test-rmse-mean'])
@@ -181,11 +181,11 @@ if __name__ == "__main__":
         os.mkdir('./{}/shap_TH_ac_plot/'.format(folder_name))
     if not os.path.exists('./{}/distribution_plot/'.format(folder_name)):
         os.mkdir('./{}/distribution_plot/'.format(folder_name))
-    if not os.path.exists('./{}/SMOTE_room/'.format(folder_name)):
-        os.mkdir('./{}/SMOTE_room/'.format(folder_name))
+    # if not os.path.exists('./{}/SMOTE_room/'.format(folder_name)):
+    #     os.mkdir('./{}/SMOTE_room/'.format(folder_name))
     for room in tqdm(room_list):
         # Delete the rooms with low quality data manually.
-        if room == 309 or room == 312 or room == 917 or room == 1001:
+        if room == 309 or room == 312 or room == 826 or room == 917 or room == 1001:
             continue
         # view_shap_importance(room)  # This function will pop up a demo window for each room.
         plot_shap_interact(room)
