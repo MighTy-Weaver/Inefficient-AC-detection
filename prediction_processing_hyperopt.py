@@ -18,6 +18,7 @@ from matplotlib import cm
 from matplotlib.colors import ListedColormap
 from sklearn.metrics import r2_score
 from tqdm import tqdm
+from xgboost import DMatrix
 
 folder_name = 'Test_R2_HYPEROPT_v10'
 
@@ -34,6 +35,7 @@ def original_dataloader(room: int):
     This function is the observation dataloader
     """
     data = pd.read_csv('summer_data_compiled.csv', index_col=0).drop(['Time', 'Hour', 'Date'], axis=1)
+    data = data[data.AC > 0]
     room_data = data[data.Location == room]
     y = room_data['AC']
     X = room_data.drop(['AC', 'Location'], axis=1)
@@ -89,7 +91,14 @@ def plot_shap_interact(room: int):
 # This is the function to plot the distribution of the predictions according to the ground truth.
 def plot_distribution(room: int):
     plt.rcParams.update({'font.size': 13})
-    real, predict = prediction_dataloader(room)
+
+    # real, predict = prediction_dataloader(room)
+
+    input, real = original_dataloader(room)
+    matrix = DMatrix(input, label=real)
+    model = pickle.load(open('./{}/models/{}.pickle.bat'.format(folder_name, room), 'rb'))
+    predict = list(model.predict(matrix))
+
     error = pd.read_csv('./{}/error.csv'.format(folder_name), index_col=None)
     room_error = error[error.room == room].reset_index(drop=True)
     plt.rc('font', family='Times New Roman')
