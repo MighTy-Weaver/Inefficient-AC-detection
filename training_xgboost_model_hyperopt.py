@@ -3,6 +3,7 @@
 
 import argparse
 import json
+import math
 import os
 import pickle
 import warnings
@@ -20,7 +21,7 @@ from xgboost import DMatrix, cv
 
 # Set up an argument parser to decide the metric function
 parser = argparse.ArgumentParser()
-parser.add_argument("--metric", choices=['R2', 'RMSE', '10acc', 'MSE'], type=str, required=False, default='R2',
+parser.add_argument("--metric", choices=['R2', 'RMSE', '10acc'], type=str, required=False, default='R2',
                     help="The evaluation metric you want to use to train the XGBoost model")
 parser.add_argument("--log", choices=[0, 1, 100], type=int, required=False, default=0,
                     help="Whether to print out the training progress")
@@ -37,12 +38,13 @@ data = data[data.AC > 0].drop(['Time', 'Date', 'Hour'], axis=1).reset_index(drop
 
 # Create some directory to store the models and future analysis figures.
 # log_folder_name = "Test_{}_{}".format(args.metric, datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
-log_folder_name = "Test_R2_HYPEROPT_v10"
-previous_parameter_folder = ""
+log_folder_name = "Test_R2_HYPEROPT_v11"
+previous_parameter_folder = "Test_R2_HYPEROPT_v10"
 
 if not os.path.exists('./{}/'.format(log_folder_name)):
     os.mkdir('./{}'.format(log_folder_name))
     os.mkdir('./{}/models/'.format(log_folder_name))
+    os.mkdir('./{}/trntst_models/'.format(log_folder_name))
 
 
 # Define our evaluation functions
@@ -55,15 +57,8 @@ def ten_percent_accuracy(predt: np.ndarray, dtrain: DMatrix) -> Tuple[str, float
 
 def RMSE(predt: np.ndarray, dtrain: DMatrix) -> Tuple[str, float]:
     truth_value = dtrain.get_label()
-    # squared_error = sum([np.power(truth_value[i] - predt[i], 2) for i in range(len(predt))])
-    # return "RMSE", float(np.sqrt(squared_error / len(predt)))
-    root_squard_error = mean_squared_error(truth_value, predt)
+    root_squard_error = math.sqrt(mean_squared_error(truth_value, predt))
     return "RMSE", root_squard_error
-
-
-def MSE(predt: np.ndarray, dtrain: DMatrix) -> Tuple[str, float]:
-    truth_value = dtrain.get_label()
-    return "MSE", float(sum([np.power(truth_value[i] - predt[i], 2) for i in range(len(predt))]) / len(predt))
 
 
 def R2(predt: np.ndarray, dtrain: DMatrix) -> Tuple[str, float]:
@@ -90,7 +85,7 @@ def fobjective(space):
     return {"loss": (xgb_cv_result["test-rmse-mean"]).tail(1).iloc[0], "status": STATUS_OK}
 
 
-eval_dict = {'RMSE': RMSE, 'R2': R2, 'MSE': MSE, '10acc': ten_percent_accuracy}
+eval_dict = {'RMSE': RMSE, 'R2': R2, '10acc': ten_percent_accuracy}
 
 print("Start Training The Models")
 # Create two dataframes to store the result during the training and after the training.
@@ -101,7 +96,7 @@ error_csv = pd.DataFrame(
 prediction_csv = pd.DataFrame(columns=['room', 'observation', 'prediction'])
 
 room_list = data['Location'].unique()
-# room_list = [828]
+
 # ranging through all the rooms and do the training and cross-validation for each room.
 for room in tqdm(room_list):
     seed = 2030 + room
@@ -181,6 +176,7 @@ for room in tqdm(room_list):
     xgb_model_full = xgb.train(params=best_param_dict, dtrain=data_matrix, num_boost_round=200, evals=watchlist,
                                verbose_eval=args.log, xgb_model=None, feval=eval_dict[args.metric], maximize=True)
 
+    pickle.dump(xgb_model_train_test, open('./{}/trntst_models/{}.pickle.bat'.format(log_folder_name, room), 'wb'))
     pickle.dump(xgb_model_full, open('./{}/models/{}.pickle.bat'.format(log_folder_name, room), 'wb'))
 
 print("Training finished!")
