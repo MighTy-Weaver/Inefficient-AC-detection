@@ -3,10 +3,10 @@
 # Kindly notice that all the plots are default to save directly, it will not show out during the process.
 
 import json
+import math
 import os
 import pickle
 import warnings
-from math import sqrt
 from statistics import mean
 
 import matplotlib.pyplot as plt
@@ -16,7 +16,7 @@ import seaborn
 import shap
 from matplotlib import cm
 from matplotlib.colors import ListedColormap
-from sklearn.metrics import r2_score
+from sklearn.metrics import r2_score, mean_squared_error
 from tqdm import tqdm
 from xgboost import DMatrix
 
@@ -64,17 +64,6 @@ def view_shap_importance(room: int):
     shap.force_plot(explainer.expected_value, shap_values[0, :], X.iloc[0, :], matplotlib=True)
 
 
-# This is the function to calculate the RMSE value of a room, based on the model's predictions.
-def calculate_R2_MSE_RMSE(room: int):
-    data = pd.read_csv('./{}/prediction.csv'.format(folder_name), index_col=None)
-    data = data[data.room == room].reset_index(drop=True)
-    real = json.loads(data.loc[0, 'real'])
-    predict = json.loads(data.loc[0, 'predict'])
-    square_sum = sum([(real[i] - predict[i]) ** 2 for i in range(len(real))])
-    R2 = r2_score(real, predict)
-    return R2, square_sum / len(real), sqrt(square_sum / len(real))
-
-
 # This function plots the interacted shapley value for each room's temperature and humidity.
 def plot_shap_interact(room: int):
     plt.rcParams.update({'font.size': 20})
@@ -98,6 +87,8 @@ def plot_distribution(room: int):
     matrix = DMatrix(input, label=real)
     model = pickle.load(open('./{}/models/{}.pickle.bat'.format(folder_name, room), 'rb'))
     predict = list(model.predict(matrix))
+    full_r2 = round(r2_score(real, predict), 4)
+    full_rmse = round(math.sqrt(mean_squared_error(real, predict)), 4)
 
     error = pd.read_csv('./{}/error.csv'.format(folder_name), index_col=None)
     room_error = error[error.room == room].reset_index(drop=True)
@@ -118,8 +109,17 @@ def plot_distribution(room: int):
     plt.legend(frameon=False)
     plt.colorbar(label="Error (Observation - Prediction)")
     plt.xlabel(
-        "Observation\nR2 score: {}\nRoot Mean Square Error: {}".format(
-            round(room_error.loc[0, 'test-R2-mean'], 4), round(room_error.loc[0, 'test-rmse-mean'], 4)))
+        "Observation  # Data: {}\nR2 score: {}  R2 score on all: {}\nRMSE: {}  RMSE on all: {}".format(len(real),
+                                                                                                       round(
+                                                                                                           room_error.loc[
+                                                                                                               0, 'test-R2-mean'],
+                                                                                                           4),
+                                                                                                       full_r2,
+                                                                                                       round(
+                                                                                                           room_error.loc[
+                                                                                                               0, 'test-rmse-mean'],
+                                                                                                           4),
+                                                                                                       full_rmse))
     plt.savefig("./{}/distribution_plot/room{}.png".format(folder_name, room), bbox_inches='tight')
     # plt.show()
     plt.clf()
