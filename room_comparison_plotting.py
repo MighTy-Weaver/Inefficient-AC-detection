@@ -45,13 +45,13 @@ low_df = low_df[low_df.AC < 1.5]
 
 # Plot the distribution plot.
 sns.distplot(high_df['AC'], bins=sorted(high_df['AC'].unique()),
-             label="High efficiency, mean={}kWh".format(high_mean), color="brown",
+             label="High efficiency, mean={}kWh, #data{}".format(high_mean, len(high_df)), color="brown",
              hist_kws={"edgecolor": "black"}, kde_kws={"linewidth": "3"})
 sns.distplot(mid_df['AC'], bins=sorted(mid_df['AC'].unique()),
-             label="Moderate efficiency, mean={}kWh".format(mid_mean), color="darkblue",
+             label="Moderate efficiency, mean={}kWh, #data{}".format(mid_mean, len(mid_df)), color="darkblue",
              hist_kws={"edgecolor": "black"}, kde_kws={"linewidth": "3"})
 sns.distplot(low_df['AC'], bins=sorted(low_df['AC'].unique()),
-             label="Low efficiency, mean={}kWh".format(low_mean), color="skyblue",
+             label="Low efficiency, mean={}kWh, #data{}".format(low_mean, len(low_df)), color="skyblue",
              hist_kws={"edgecolor": "black"}, kde_kws={"linewidth": "3"})
 
 plt.legend()
