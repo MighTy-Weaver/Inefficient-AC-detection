@@ -73,9 +73,10 @@ def plot_shap_interact(room: int):
     explainer = shap.TreeExplainer(model)
     X, y = original_dataloader(room)
     shap_values = explainer.shap_values(X)
-    shap.dependence_plot("Temperature", shap_values, X, interaction_index="Humidity", save=True,
+    shap.dependence_plot("Temperature", shap_values, X, interaction_index="Wifi_count", save=True,
                          path="./{}/shap_TH_ac_plot/{}.png".format(folder_name, room), show=False,
-                         title="Shapley Value for Temperature & Humidity of Room {}".format(room))
+                         title="Shapley Value for Temperature & WIFI count of Room {}".format(room), xlimit=[17.5, 40],
+                         ylimit=[-0.25, 0.2])
     plt.clf()
 
 
@@ -101,7 +102,15 @@ def plot_distribution(room: int):
     # Use the scatter plot to plot the distribution with our own color bar.
     plt.scatter(real, predict, c=real - predict, marker='o', label="(Observation, Prediction)", s=10, cmap=newcmp,
                 vmin=-0.8, vmax=0.8)
-    real_range = np.linspace(min(real), max(real))
+    # real_range = np.linspace(min(real), max(real))
+
+    if room == 916:
+        real_range = np.linspace(0, 2)
+    else:
+        real_range = np.linspace(0, 1.25)
+
+    # real_range = np.linspace(0, 2)
+
     # Plot the identity line of y=x
     plt.plot(real_range, real_range, color='m', linestyle="-.", linewidth=1, label="Identity Line (y=x)")
     plt.title("Prediction Validation Graph of Room {}".format(room))
@@ -109,9 +118,14 @@ def plot_distribution(room: int):
     plt.legend(frameon=False)
     plt.colorbar(label="Error (Observation - Prediction)")
     plt.xlabel(
-        "Observation\nNumber of data: {}\nCross-Validation Statistics: R2 score: {}  RMSE: {}\nTrained on 80% Dataset Statistics: R2 score: {}  RMSE: {}".format(
-            len(real), round(room_error.loc[0, 'test-R2-mean'], 4), round(room_error.loc[0, 'test-rmse-mean'], 4),
-            full_r2, full_rmse))
+        "Observation\nNumber of data: {}\nCross-Validation Statistics: R2 score: {}  RMSE: {}".format(
+            len(real), round(room_error.loc[0, 'test-R2-mean'], 4), round(room_error.loc[0, 'test-rmse-mean'], 4)))
+    if room == 916:
+        plt.xlim([0, 2])
+        plt.ylim([0, 2])
+    else:
+        plt.xlim([0, 1.25])
+        plt.ylim([0, 1.25])
     plt.savefig("./{}/distribution_plot/room{}.png".format(folder_name, room), bbox_inches='tight')
     # plt.show()
     plt.clf()
@@ -120,7 +134,7 @@ def plot_distribution(room: int):
 
 
 # This is the function to plot the error and root mean square error distribution of all the rooms.
-def plot_error_distribution():
+def plot_error_distribution(bin=20):
     r2_list, rmse_list = [], []
     stat_log = pd.read_csv('./{}/error.csv'.format(folder_name), index_col=None)
     # Looping through all the room and collect the statistics we need.
@@ -138,55 +152,57 @@ def plot_error_distribution():
 
     # Use the historgram in matplotlib to plot the accuracy distribution histogram.
     fig, ax = plt.subplots()
-    n, r2_bins, patches = ax.hist(r2_list, bins=50, density=True, facecolor="blue", rwidth=0.8, alpha=0.7)
+    n, r2_bins, patches = ax.hist(r2_list, bins=bin, density=True, facecolor="blue", rwidth=0.8, alpha=0.7)
     y = ((1 / (np.sqrt(2 * np.pi) * r2_std)) *
          np.exp(-0.5 * (1 / r2_std * (r2_bins - r2_mean)) ** 2))
     ax.plot(r2_bins, y, '--')
     plt.xlabel("R2 Score\nMean R2 Score: {}".format(round(mean(r2_list), 2)))
     plt.ylabel("Frequency")
     plt.title("The R2 Score Distribution Histogram (Cross-Validation)")
-    plt.savefig('./{}/R2Dis_CV.png'.format(folder_name), bbox_inches='tight')
+    plt.savefig('./{}/R2Dis_CV_bin{}.png'.format(folder_name, bin), bbox_inches='tight')
     plt.clf()
 
     # Use the same to plot the root mean square error distribution histogram.
     fig, ax = plt.subplots()
-    _, rmse_bins, _ = ax.hist(rmse_list, bins=50, density=True, facecolor="blue", rwidth=0.8, alpha=0.7)
+    _, rmse_bins, _ = ax.hist(rmse_list, bins=bin, density=True, facecolor="blue", rwidth=0.8, alpha=0.7)
     y = ((1 / (np.sqrt(2 * np.pi) * rmse_std)) *
          np.exp(-0.5 * (1 / rmse_std * (rmse_bins - rmse_mean)) ** 2))
     ax.plot(rmse_bins, y, '--')
     plt.xlabel("Root Mean Square Error\nMean RMSE: {}".format(round(mean(rmse_list), 4)))
     plt.ylabel("Frequency")
     plt.title("The RMSE Distribution Histogram (Cross-Validation)")
-    plt.savefig('./{}/RMSEDis_CV.png'.format(folder_name), bbox_inches='tight')
+    plt.savefig('./{}/RMSEDis_CV_bin{}.png'.format(folder_name, bin), bbox_inches='tight')
     plt.clf()
 
     r2_mean, r2_std = np.mean(trntst_r2_list), np.std(trntst_r2_list)
     rmse_mean, rmse_std = np.mean(trntst_rmse_list), np.std(trntst_rmse_list)
     plt.rcParams.update({'font.size': 15})
 
-    # Use the historgram in matplotlib to plot the accuracy distribution histogram.
-    fig, ax = plt.subplots()
-    n, r2_bins, patches = ax.hist(trntst_r2_list, bins=50, density=True, facecolor="blue", rwidth=0.8, alpha=0.7)
-    y = ((1 / (np.sqrt(2 * np.pi) * r2_std)) *
-         np.exp(-0.5 * (1 / r2_std * (r2_bins - r2_mean)) ** 2))
-    ax.plot(r2_bins, y, '--')
-    plt.xlabel("R2 Score\nMean R2 Score: {}".format(round(mean(trntst_r2_list), 2)))
-    plt.ylabel("Frequency")
-    plt.title("The R2 Score Distribution Histogram (Trained on 80% data)")
-    plt.savefig('./{}/R2Dis_trntst.png'.format(folder_name), bbox_inches='tight')
-    plt.clf()
+    if trntst_r2_list:
+        # Use the historgram in matplotlib to plot the accuracy distribution histogram.
+        fig, ax = plt.subplots()
+        n, r2_bins, patches = ax.hist(trntst_r2_list, bins=bin, density=True, facecolor="blue", rwidth=0.8, alpha=0.7)
+        y = ((1 / (np.sqrt(2 * np.pi) * r2_std)) *
+             np.exp(-0.5 * (1 / r2_std * (r2_bins - r2_mean)) ** 2))
+        ax.plot(r2_bins, y, '--')
+        plt.xlabel("R2 Score\nMean R2 Score: {}".format(round(mean(trntst_r2_list), 2)))
+        plt.ylabel("Frequency")
+        plt.title("The R2 Score Distribution Histogram (Trained on 80% data)")
+        plt.savefig('./{}/R2Dis_trntst_bin{}.png'.format(folder_name, bin), bbox_inches='tight')
+        plt.clf()
 
-    # Use the same to plot the root mean square error distribution histogram.
-    fig, ax = plt.subplots()
-    _, rmse_bins, _ = ax.hist(trntst_rmse_list, bins=50, density=True, facecolor="blue", rwidth=0.8, alpha=0.7)
-    y = ((1 / (np.sqrt(2 * np.pi) * rmse_std)) *
-         np.exp(-0.5 * (1 / rmse_std * (rmse_bins - rmse_mean)) ** 2))
-    ax.plot(rmse_bins, y, '--')
-    plt.xlabel("Root Mean Square Error\nMean RMSE: {}".format(round(mean(trntst_rmse_list), 4)))
-    plt.ylabel("Frequency")
-    plt.title("The RMSE Distribution Histogram (Trained on 80% data)")
-    plt.savefig('./{}/RMSEDis_trntst.png'.format(folder_name), bbox_inches='tight')
-    plt.clf()
+    if trntst_rmse_list:
+        # Use the same to plot the root mean square error distribution histogram.
+        fig, ax = plt.subplots()
+        _, rmse_bins, _ = ax.hist(trntst_rmse_list, bins=bin, density=True, facecolor="blue", rwidth=0.8, alpha=0.7)
+        y = ((1 / (np.sqrt(2 * np.pi) * rmse_std)) *
+             np.exp(-0.5 * (1 / rmse_std * (rmse_bins - rmse_mean)) ** 2))
+        ax.plot(rmse_bins, y, '--')
+        plt.xlabel("Root Mean Square Error\nMean RMSE: {}".format(round(mean(trntst_rmse_list), 4)))
+        plt.ylabel("Frequency")
+        plt.title("The RMSE Distribution Histogram (Trained on 80% data)")
+        plt.savefig('./{}/RMSEDis_trntst_bin{}.png'.format(folder_name, bin), bbox_inches='tight')
+        plt.clf()
 
 
 def plot_room_number_data_and_R2():
@@ -221,5 +237,5 @@ if __name__ == "__main__":
         # view_shap_importance(room)  # This function will pop up a demo window for each room.
         plot_shap_interact(room)
         plot_distribution(room)
-    plot_error_distribution()
-    plot_room_number_data_and_R2()
+    plot_error_distribution(23)
+    # plot_room_number_data_and_R2()

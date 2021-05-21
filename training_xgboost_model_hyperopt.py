@@ -13,6 +13,7 @@ import numpy as np
 import pandas as pd
 import xgboost as xgb
 from hyperopt import fmin, tpe, hp, STATUS_OK, Trials
+from imblearn.over_sampling import SMOTE
 from numpy.random import RandomState
 from sklearn.metrics import r2_score, mean_squared_error
 from sklearn.model_selection import train_test_split
@@ -21,10 +22,11 @@ from xgboost import DMatrix, cv
 
 # Set up an argument parser to decide the metric function
 parser = argparse.ArgumentParser()
-parser.add_argument("--metric", choices=['R2', 'RMSE', '10acc'], type=str, required=False, default='R2',
+parser.add_argument("--metric", choices=['R2', 'RMSE'], type=str, required=False, default='R2',
                     help="The evaluation metric you want to use to train the XGBoost model")
 parser.add_argument("--log", choices=[0, 1, 100], type=int, required=False, default=0,
                     help="Whether to print out the training progress")
+parser.add_argument("--SMOTE", choices=[0, 1], type=int, required=False, default=1, help="Whether use the SMOTE or not")
 args = parser.parse_args()
 
 # Ignore all the warnings and set pandas to display every column and row everytime we print a dataframe
@@ -38,8 +40,8 @@ data = data[data.AC > 0].drop(['Time', 'Date', 'Hour'], axis=1).reset_index(drop
 
 # Create some directory to store the models and future analysis figures.
 # log_folder_name = "Test_{}_{}".format(args.metric, datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
-log_folder_name = "Test_R2_HYPEROPT_v11"
-previous_parameter_folder = "Test_R2_HYPEROPT_v10"
+log_folder_name = "Test_R2_HYPEROPT_v12"
+previous_parameter_folder = "Test_R2_HYPEROPT_v11"
 
 if not os.path.exists('./{}/'.format(log_folder_name)):
     os.mkdir('./{}'.format(log_folder_name))
@@ -48,13 +50,6 @@ if not os.path.exists('./{}/'.format(log_folder_name)):
 
 
 # Define our evaluation functions
-def ten_percent_accuracy(predt: np.ndarray, dtrain: DMatrix) -> Tuple[str, float]:
-    total = len(predt)
-    truth_value = dtrain.get_label()
-    correct = sum([1 for i in range(total) if predt[i] * 0.9 < truth_value[i] < predt[i] * 1.1])
-    return "10%Accuracy", float(correct / total)
-
-
 def RMSE(predt: np.ndarray, dtrain: DMatrix) -> Tuple[str, float]:
     truth_value = dtrain.get_label()
     root_squard_error = math.sqrt(mean_squared_error(truth_value, predt))
@@ -85,7 +80,7 @@ def fobjective(space):
     return {"loss": (xgb_cv_result["test-rmse-mean"]).tail(1).iloc[0], "status": STATUS_OK}
 
 
-eval_dict = {'RMSE': RMSE, 'R2': R2, '10acc': ten_percent_accuracy}
+eval_dict = {'RMSE': RMSE, 'R2': R2}
 
 print("Start Training The Models")
 # Create two dataframes to store the result during the training and after the training.
@@ -107,10 +102,16 @@ for room in tqdm(room_list):
     # We extract the data of particular room and run the SMOTE algorithm on it.
     room_data = data[data.Location == room].drop(['Location'], axis=1).reset_index(drop=True)
 
-    y = room_data['AC'].fillna(method='pad')
+    y = pd.DataFrame(room_data['AC'].fillna(method='pad'))
     X = room_data.drop(['AC'], axis=1).fillna(method='pad')
-
     X = X.to_numpy()
+
+    if args.SMOTE:
+        sampler = SMOTE(random_state=621)
+        re_X, re_Y = sampler.fit_sample(X, y)
+        print(len(X), len(re_X))
+        X = re_X
+        y = re_Y
 
     # Build another full data matrix for the built-in cross validation function to work.
     data_matrix = DMatrix(data=X, label=y)
@@ -176,6 +177,7 @@ for room in tqdm(room_list):
     xgb_model_full = xgb.train(params=best_param_dict, dtrain=data_matrix, num_boost_round=200, evals=watchlist,
                                verbose_eval=args.log, xgb_model=None, feval=eval_dict[args.metric], maximize=True)
 
+    # Save all the models we trained for future use
     pickle.dump(xgb_model_train_test, open('./{}/trntst_models/{}.pickle.bat'.format(log_folder_name, room), 'wb'))
     pickle.dump(xgb_model_full, open('./{}/models/{}.pickle.bat'.format(log_folder_name, room), 'wb'))
 
