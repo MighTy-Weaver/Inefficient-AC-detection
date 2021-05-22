@@ -17,6 +17,7 @@ from imblearn.over_sampling import SMOTE
 from numpy.random import RandomState
 from sklearn.metrics import r2_score, mean_squared_error
 from sklearn.model_selection import train_test_split
+from sklearn.utils import compute_sample_weight
 from tqdm import tqdm
 from xgboost import DMatrix, cv
 
@@ -26,7 +27,10 @@ parser.add_argument("--metric", choices=['R2', 'RMSE'], type=str, required=False
                     help="The evaluation metric you want to use to train the XGBoost model")
 parser.add_argument("--log", choices=[0, 1, 100], type=int, required=False, default=0,
                     help="Whether to print out the training progress")
-parser.add_argument("--SMOTE", choices=[0, 1], type=int, required=False, default=1, help="Whether use the SMOTE or not")
+parser.add_argument("--SMOTE", choices=[0, 1], type=int, required=False, default=0, help="Whether use the SMOTE or not")
+parser.add_argument("--SMOGN", choices=[0, 1], type=int, required=False, default=1, help="Whether use the SMOGN or not")
+parser.add_argument("--SampleWeight", choices=[0, 1], type=int, required=False, default=0,
+                    help="Whether use the sample weight")
 args = parser.parse_args()
 
 # Ignore all the warnings and set pandas to display every column and row everytime we print a dataframe
@@ -34,14 +38,22 @@ warnings.filterwarnings('ignore')
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 
+assert args.SMOTE != args.SMOGN, "Can't use SMOTE and SMOGN at the same time!"
+
 # Load the data with a positive AC electricity consumption value, and drop the time data as we don't need them
 data = pd.read_csv("summer_data_compiled.csv", index_col=0)
 data = data[data.AC > 0].drop(['Time', 'Date', 'Hour'], axis=1).reset_index(drop=True)
 
 # Create some directory to store the models and future analysis figures.
 # log_folder_name = "Test_{}_{}".format(args.metric, datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
-log_folder_name = "Test_R2_HYPEROPT_v12"
-previous_parameter_folder = "Test_R2_HYPEROPT_v11"
+log_folder_name = "Test_R2_HYPEROPT"
+log_folder_name = log_folder_name + "_SMOTE" if args.SMOTE else log_folder_name
+log_folder_name = log_folder_name + "_SMOGN" if args.SMOGN else log_folder_name
+log_folder_name = log_folder_name + "_SW" if args.SampleWeight else log_folder_name
+
+previous_parameter_folder = "Test_R2_HYPEROPT"
+
+assert log_folder_name != previous_parameter_folder, "Previous folder name exists"
 
 if not os.path.exists('./{}/'.format(log_folder_name)):
     os.mkdir('./{}'.format(log_folder_name))
@@ -102,19 +114,50 @@ for room in tqdm(room_list):
     # We extract the data of particular room and run the SMOTE algorithm on it.
     room_data = data[data.Location == room].drop(['Location'], axis=1).reset_index(drop=True)
 
-    y = pd.DataFrame(room_data['AC'].fillna(method='pad'))
-    X = room_data.drop(['AC'], axis=1).fillna(method='pad')
+    if args.SMOTE:
+        # Label all the AC data by 0.75, all AC above 0.75 will be marked as 1, otherwise 0. Split into X and y
+        room_data['SMOTE_split'] = (room_data['AC'] > 0.75).astype('int')
+        X = room_data.drop(['SMOTE_split'], axis=1)
+        y = room_data['SMOTE_split']
+
+        # Run the SMOTE algorithm and retrieve the result.
+        model_smote = SMOTE(random_state=621, k_neighbors=3)
+        room_data_smote, smote_split = model_smote.fit_resample(X, y)
+
+        # concat the result from SMOTE and split the result into X and y for training.
+        room_data_smote = pd.concat([room_data_smote, smote_split], axis=1)
+        y = room_data_smote['AC']
+        X = room_data_smote.drop(['AC', 'SMOTE_split'], axis=1)
+    elif args.SMOGN:
+        if len(room_data) < 500:
+            room_data['SMOTE_split'] = (room_data['AC'] > 0.75).astype('int')
+            X = room_data.drop(['SMOTE_split'], axis=1)
+            y = room_data['SMOTE_split']
+
+            # Run the SMOTE algorithm and retrieve the result.
+            model_smote = SMOTE(random_state=621, k_neighbors=3)
+            room_data_smote, smote_split = model_smote.fit_resample(X, y)
+
+            # concat the result from SMOTE and split the result into X and y for training.
+            room_data_smote = pd.concat([room_data_smote, smote_split], axis=1)
+            y = room_data_smote['AC']
+            X = room_data_smote.drop(['AC', 'SMOTE_split'], axis=1)
+        else:
+            room_data = pd.read_csv('./SMOGN_processed/{}.csv'.format(room), index_col=0)
+            y = room_data['AC']
+            X = room_data.drop(['AC'], axis=1)
+    else:
+        y = pd.DataFrame(room_data['AC'].fillna(method='pad'))
+        X = room_data.drop(['AC'], axis=1).fillna(method='pad')
+
+    if args.SampleWeight:
+        class_sample = pd.cut(y, bins=15)
+        weight = compute_sample_weight(class_weight="balanced", y=class_sample)
+
     X = X.to_numpy()
 
-    if args.SMOTE:
-        sampler = SMOTE(random_state=621)
-        re_X, re_Y = sampler.fit_sample(X, y)
-        print(len(X), len(re_X))
-        X = re_X
-        y = re_Y
-
     # Build another full data matrix for the built-in cross validation function to work.
-    data_matrix = DMatrix(data=X, label=y)
+    data_matrix = DMatrix(data=X, label=y, weight=weight) if args.SampleWeight else DMatrix(data=X, label=y)
 
     # Cross_validation with hyper-parameter tuning
     space = {'max_depth': hp.quniform("max_depth", 3, 10, 1),

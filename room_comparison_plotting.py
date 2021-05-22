@@ -10,7 +10,7 @@ warnings.filterwarnings('ignore')
 
 # Read the original data
 data = pd.read_csv('./summer_data_compiled.csv')
-data = data[data.AC > 0]
+data = data[(data.AC > 0) & (data.Prev_1hr)]
 
 room_split = pd.read_csv('./room_classification.csv', index_col=None)
 
@@ -58,4 +58,3 @@ plt.legend()
 plt.xlabel("Hourly AC Electricity Consumption/kWh")
 plt.ylabel("Kernel Density")
 plt.show()
-# plt.savefig('./demo/Room_dis.png', bbox_inches='tight')

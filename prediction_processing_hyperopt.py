@@ -20,7 +20,7 @@ from sklearn.metrics import r2_score, mean_squared_error
 from tqdm import tqdm
 from xgboost import DMatrix
 
-folder_name = 'Test_R2_HYPEROPT_v11'
+folder_name = 'Test_R2_Best_Among_SMOTE_SMOGN'
 
 # Ignore the warnings, let pandas print the full message and do some overall settings for matplotlib.
 warnings.filterwarnings('ignore')
@@ -156,7 +156,7 @@ def plot_error_distribution(bin=20):
     y = ((1 / (np.sqrt(2 * np.pi) * r2_std)) *
          np.exp(-0.5 * (1 / r2_std * (r2_bins - r2_mean)) ** 2))
     ax.plot(r2_bins, y, '--')
-    plt.xlabel("R2 Score\nMean R2 Score: {}".format(round(mean(r2_list), 2)))
+    plt.xlabel("R2 Score\nMean R2 Score: {}".format(round(mean(r2_list), 4)))
     plt.ylabel("Frequency")
     plt.title("The R2 Score Distribution Histogram (Cross-Validation)")
     plt.savefig('./{}/R2Dis_CV_bin{}.png'.format(folder_name, bin), bbox_inches='tight')
@@ -185,7 +185,7 @@ def plot_error_distribution(bin=20):
         y = ((1 / (np.sqrt(2 * np.pi) * r2_std)) *
              np.exp(-0.5 * (1 / r2_std * (r2_bins - r2_mean)) ** 2))
         ax.plot(r2_bins, y, '--')
-        plt.xlabel("R2 Score\nMean R2 Score: {}".format(round(mean(trntst_r2_list), 2)))
+        plt.xlabel("R2 Score\nMean R2 Score: {}".format(round(mean(trntst_r2_list), 4)))
         plt.ylabel("Frequency")
         plt.title("The R2 Score Distribution Histogram (Trained on 80% data)")
         plt.savefig('./{}/R2Dis_trntst_bin{}.png'.format(folder_name, bin), bbox_inches='tight')
