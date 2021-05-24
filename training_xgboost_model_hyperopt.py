@@ -27,8 +27,8 @@ parser.add_argument("--metric", choices=['R2', 'RMSE'], type=str, required=False
                     help="The evaluation metric you want to use to train the XGBoost model")
 parser.add_argument("--log", choices=[0, 1, 100], type=int, required=False, default=0,
                     help="Whether to print out the training progress")
-parser.add_argument("--SMOTE", choices=[0, 1], type=int, required=False, default=0, help="Whether use the SMOTE or not")
-parser.add_argument("--SMOGN", choices=[0, 1], type=int, required=False, default=1, help="Whether use the SMOGN or not")
+parser.add_argument("--SMOTE", choices=[0, 1], type=int, required=False, default=1, help="Whether use the SMOTE or not")
+parser.add_argument("--SMOGN", choices=[0, 1], type=int, required=False, default=0, help="Whether use the SMOGN or not")
 parser.add_argument("--SampleWeight", choices=[0, 1], type=int, required=False, default=0,
                     help="Whether use the sample weight")
 args = parser.parse_args()
