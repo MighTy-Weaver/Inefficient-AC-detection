@@ -40,6 +40,7 @@ for i in types:
     plt.title('Distribution histogram for {}'.format(i))
     plt.savefig('./data_description/{}.png'.format(i), bbox_inches='tight')
     plt.clf()
+
 data_no_location = data.drop(['Location'], axis=1)
 corr = data_no_location.corr()
 corr.style.background_gradient(cmap='coolwarm').set_precision(2).set_properties(**{'font-family': 'Times New Roman'})
