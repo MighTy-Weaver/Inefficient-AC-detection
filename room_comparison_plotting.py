@@ -8,6 +8,11 @@ import seaborn as sns
 # Ignore all the warnings
 warnings.filterwarnings('ignore')
 
+numpy_file_name = ""
+
+lists = np.load('./{}'.format(numpy_file_name), allow_pickle=True).item()
+num_cates = len(lists)
+
 # Read the original data
 data = pd.read_csv('./summer_data_compiled.csv')
 data = data[(data.AC > 0) & (data.Prev_1hr)]

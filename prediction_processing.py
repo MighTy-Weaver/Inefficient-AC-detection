@@ -20,7 +20,7 @@ from sklearn.metrics import r2_score, mean_squared_error
 from tqdm import tqdm
 from xgboost import DMatrix
 
-folder_name = 'Test_R2_Best_Among_SMOTE_SMOGN'
+folder_name = 'Test_R2_HYPEROPT_SMOTE'
 
 # Ignore the warnings, let pandas print the full message and do some overall settings for matplotlib.
 warnings.filterwarnings('ignore')
@@ -76,6 +76,10 @@ def plot_shap_interact(room: int):
     shap.dependence_plot("Temperature", shap_values, X, interaction_index="Wifi_count", save=True,
                          path="./{}/shap_TH_ac_plot/{}.png".format(folder_name, room), show=False,
                          title="Shapley Value for Temperature & WIFI count of Room {}".format(room), xlimit=[17.5, 40],
+                         ylimit=[-0.25, 0.2])
+    shap.dependence_plot("Temperature", shap_values, X, interaction_index=None, save=True,
+                         path="./{}/shap_T_ac_plot/{}.png".format(folder_name, room), show=False,
+                         title="Shapley Value for Temperature of Room {}".format(room), xlimit=[17.5, 40],
                          ylimit=[-0.25, 0.2])
     plt.clf()
 
@@ -226,6 +230,8 @@ def plot_room_number_data_and_R2():
 if __name__ == "__main__":
     if not os.path.exists('./{}/shap_TH_ac_plot/'.format(folder_name)):
         os.mkdir('./{}/shap_TH_ac_plot/'.format(folder_name))
+    if not os.path.exists('./{}/shap_T_ac_plot/'.format(folder_name)):
+        os.mkdir('./{}/shap_T_ac_plot/'.format(folder_name))
     if not os.path.exists('./{}/distribution_plot/'.format(folder_name)):
         os.mkdir('./{}/distribution_plot/'.format(folder_name))
     # if not os.path.exists('./{}/SMOTE_room/'.format(folder_name)):
