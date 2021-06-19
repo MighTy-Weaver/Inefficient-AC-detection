@@ -7,11 +7,11 @@ import cv2
 import numpy as np
 from sklearn.cluster import KMeans, MiniBatchKMeans
 
-categories = 3
+categories = 2
 available_cates = ["KMeans", "MiniKMeans"]
 cate_name = "KMeans"
 
-folder_name = '{}_cate{}_{}/'.format(datetime.now().strftime("%Y%m%d%H%M%S"), categories, cate_name)
+folder_name = '{}_cate{}_{}_22_33/'.format(datetime.now().strftime("%Y%m%d%H%M%S"), categories, cate_name)
 cate_symbol = ['a', 'b', 'c', 'd']
 cates = [[] for _ in range(categories)]
 

@@ -75,11 +75,11 @@ def plot_shap_interact(room: int):
     shap_values = explainer.shap_values(X)
     shap.dependence_plot("Temperature", shap_values, X, interaction_index="Wifi_count", save=True,
                          path="./{}/shap_TH_ac_plot/{}.png".format(folder_name, room), show=False,
-                         title="Shapley Value for Temperature & WIFI count of Room {}".format(room), xlimit=[17.5, 40],
+                         title="Shapley Value for Temperature & WIFI count of Room {}".format(room), xlimit=[22, 33],
                          ylimit=[-0.25, 0.2])
     shap.dependence_plot("Temperature", shap_values, X, interaction_index=None, save=True,
                          path="./{}/shap_T_ac_plot/{}.png".format(folder_name, room), show=False,
-                         title="Shapley Value for Temperature of Room {}".format(room), xlimit=[17.5, 40],
+                         title="Shapley Value for Temperature of Room {}".format(room), xlimit=[22, 33],
                          ylimit=[-0.25, 0.2])
     plt.clf()
 
@@ -242,6 +242,6 @@ if __name__ == "__main__":
             continue
         # view_shap_importance(room)  # This function will pop up a demo window for each room.
         plot_shap_interact(room)
-        plot_distribution(room)
-    plot_error_distribution(23)
+        # plot_distribution(room)
+    # plot_error_distribution(23)
     # plot_room_number_data_and_R2()

@@ -5,9 +5,9 @@ import pandas as pd
 import seaborn as sns
 from matplotlib import pyplot as plt
 
-folder_name = "20210616130636_cate2_KMeans"
+folder_name = "20210616192104_cate2_KMeans_22_33"
 mode = "CLU"  # "CSV" or "CLU"
-categories = ["High", "Low"]
+categories = ["Low", "High"]
 
 # Ignore all the warnings and Set some general settings of all the matplotlib.
 warnings.filterwarnings('ignore')
@@ -21,6 +21,15 @@ data = pd.read_csv('./summer_data_compiled.csv', index_col=0)
 print(len(data))
 data = data[(data.AC > 0) & (data.Prev_1hr)]
 print(len(data))
+
+replaced_2016 = [714, 503, 1012, 235, 520, 735, 220, 335, 619, 817, 807, 202, 424, 801, 211, 402, 201, 326, 306, 429,
+                 414, 715, 311, 330]
+replaced_2017 = [432, 802, 227, 231, 733, 210, 315, 427, 430, 612, 613, 626, 630, 704, 914, 123, 307, 903]
+replaced_2018 = [219, 516, 417, 605, 816, 703, 803, 818, 915, 122, 207, 310, 320, 824, 518, 530, 913]
+replaced_2019_high = [822, 730, 608, 617, 708, 825, 204, 216, 413, 703, 725, 810, 410, 830, 523, 618, 415, 328, 1007,
+                      821,
+                      332]
+replaced_2019_low = [822, 730, 608, 617, 708, 825, 204]
 
 if mode == "CLU":
     lists = np.load('{}/category.npy'.format(folder_name), allow_pickle=True)
@@ -41,6 +50,20 @@ if mode == "CLU":
     plt.ylabel("Kernel Density")
     plt.show()
 
+    for i in range(num_cates):
+        print(
+            "In [{}] category:\n2016 Replaced: {}({}%)\t2017 Replaced: {}({}%)\t2018 Replaced: {}({}%)\t2019 Replaced: {}({}%)".format(
+                categories[i], len([j for j in lists[i] if int(j) in replaced_2016]),
+                100 * round(len([j for j in lists[i] if int(j) in replaced_2016]) / len(lists[i]), 4),
+                len([j for j in lists[i] if int(j) in replaced_2017]),
+                100 * round(len([j for j in lists[i] if int(j) in replaced_2017]) / len(lists[i]), 4),
+                len([j for j in lists[i] if int(j) in replaced_2018]),
+                100 * round(len([j for j in lists[i] if int(j) in replaced_2018]) / len(lists[i]), 4),
+                len([j for j in lists[i] if int(j) in replaced_2019_low]) if num_cates == 0 else len(
+                    [j for j in lists[i] if int(j) in replaced_2019_high]),
+                100 * round(len([j for j in lists[i] if int(j) in replaced_2019_low]) / len(lists[i]),
+                            4) if num_cates == 0 else 100 * round(
+                    len([j for j in lists[i] if int(j) in replaced_2019_high]) / len(lists[i]), 4)))
 elif mode == "CSV":
     room_split = pd.read_csv('./room_classification.csv', index_col=None)
 
