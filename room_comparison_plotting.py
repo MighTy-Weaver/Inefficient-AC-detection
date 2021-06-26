@@ -18,9 +18,12 @@ colors = ['brown', 'darkblue', 'skyblue']
 
 # Read the original data
 data = pd.read_csv('./summer_data_compiled.csv', index_col=0)
+data = data[(data.AC > 0)]
 print(len(data))
 data = data[(data.AC > 0) & (data.Prev_1hr)]
 print(len(data))
+for room in [328, 1007, 821, 332]:
+    print(room, len(data[data.Location == room]))
 
 replaced_2016 = [714, 503, 1012, 235, 520, 735, 220, 335, 619, 817, 807, 202, 424, 801, 211, 402, 201, 326, 306, 429,
                  414, 715, 311, 330]
@@ -30,6 +33,7 @@ replaced_2019_high = [822, 730, 608, 617, 708, 825, 204, 216, 413, 703, 725, 810
                       821,
                       332]
 replaced_2019_low = [822, 730, 608, 617, 708, 825, 204]
+replaced_2019_high = replaced_2019_low
 
 if mode == "CLU":
     lists = np.load('{}/category.npy'.format(folder_name), allow_pickle=True)
@@ -51,6 +55,7 @@ if mode == "CLU":
     plt.show()
 
     for i in range(num_cates):
+        print(len(lists[i]))
         print(
             "In [{}] category:\n2016 Replaced: {}({}%)\t2017 Replaced: {}({}%)\t2018 Replaced: {}({}%)\t2019 Replaced: {}({}%)".format(
                 categories[i], len([j for j in lists[i] if int(j) in replaced_2016]),
