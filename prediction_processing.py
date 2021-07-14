@@ -20,7 +20,7 @@ from sklearn.metrics import r2_score, mean_squared_error
 from tqdm import tqdm
 from xgboost import DMatrix
 
-folder_name = 'Test_R2_HYPEROPT_SMOTE'
+folder_name = 'Test_R2_HYPEROPT_SMOTE_clustering'
 
 # Ignore the warnings, let pandas print the full message and do some overall settings for matplotlib.
 warnings.filterwarnings('ignore')
@@ -76,11 +76,11 @@ def plot_shap_interact(room: int):
     shap.dependence_plot("Temperature", shap_values, X, interaction_index="Wifi_count", save=True,
                          path="./{}/shap_TH_ac_plot/{}.png".format(folder_name, room), show=False,
                          title="Shapley Value for Temperature & WIFI count of Room {}".format(room), xlimit=[22, 33],
-                         ylimit=[-0.25, 0.2])
+                         ylimit=[-0.25, 0.2], fontsize=19)
     shap.dependence_plot("Temperature", shap_values, X, interaction_index=None, save=True,
                          path="./{}/shap_T_ac_plot/{}.png".format(folder_name, room), show=False,
                          title="Shapley Value for Temperature of Room {}".format(room), xlimit=[22, 33],
-                         ylimit=[-0.25, 0.2])
+                         ylimit=[-0.25, 0.2], fontsize=1, axis_hide=True)
     plt.clf()
 
 
@@ -117,13 +117,15 @@ def plot_distribution(room: int):
 
     # Plot the identity line of y=x
     plt.plot(real_range, real_range, color='m', linestyle="-.", linewidth=1, label="Identity Line (y=x)")
-    plt.title("Prediction Validation Graph of Room {}".format(room))
-    plt.ylabel("Prediction")
-    plt.legend(frameon=False)
-    plt.colorbar(label="Error (Observation - Prediction)")
+    plt.title("Prediction Validation Graph of Room {}".format(room), fontsize=20)
+    plt.ylabel("Prediction", fontsize=17)
+    plt.legend(frameon=False, fontsize=15)
+    cb = plt.colorbar()
+    cb.set_label("Error (Observation - Prediction)", size=17)
     plt.xlabel(
-        "Observation\nNumber of data: {}\nCross-Validation Statistics: R2 score: {}  RMSE: {}".format(
-            len(real), round(room_error.loc[0, 'test-R2-mean'], 4), round(room_error.loc[0, 'test-rmse-mean'], 4)))
+        "Observation\n#data: {}  R2-score: {}  RMSE: {}".format(
+            len(real), round(room_error.loc[0, 'test-R2-mean'], 4), round(room_error.loc[0, 'test-rmse-mean'], 4)),
+        fontsize=18)
     if room == 916:
         plt.xlim([0, 2])
         plt.ylim([0, 2])
@@ -160,9 +162,9 @@ def plot_error_distribution(bin=20):
     y = ((1 / (np.sqrt(2 * np.pi) * r2_std)) *
          np.exp(-0.5 * (1 / r2_std * (r2_bins - r2_mean)) ** 2))
     ax.plot(r2_bins, y, '--')
-    plt.xlabel("R2 Score\nMean R2 Score: {}".format(round(mean(r2_list), 4)))
-    plt.ylabel("Frequency")
-    plt.title("The R2 Score Distribution Histogram (Cross-Validation)")
+    plt.xlabel("R2 Score\nMean R2 Score: {}".format(round(mean(r2_list), 4)), fontsize=20)
+    plt.ylabel("Density", fontsize=20)
+    plt.title("The R2 Score Distribution Histogram (Cross-Validation)", fontsize=20)
     plt.savefig('./{}/R2Dis_CV_bin{}.png'.format(folder_name, bin), bbox_inches='tight')
     plt.clf()
 
@@ -172,9 +174,9 @@ def plot_error_distribution(bin=20):
     y = ((1 / (np.sqrt(2 * np.pi) * rmse_std)) *
          np.exp(-0.5 * (1 / rmse_std * (rmse_bins - rmse_mean)) ** 2))
     ax.plot(rmse_bins, y, '--')
-    plt.xlabel("Root Mean Square Error\nMean RMSE: {}".format(round(mean(rmse_list), 4)))
-    plt.ylabel("Frequency")
-    plt.title("The RMSE Distribution Histogram (Cross-Validation)")
+    plt.xlabel("Root Mean Square Error\nMean RMSE: {}".format(round(mean(rmse_list), 4)), fontsize=20)
+    plt.ylabel("Density", fontsize=20)
+    plt.title("The RMSE Distribution Histogram (Cross-Validation)", fontsize=20)
     plt.savefig('./{}/RMSEDis_CV_bin{}.png'.format(folder_name, bin), bbox_inches='tight')
     plt.clf()
 
@@ -242,6 +244,6 @@ if __name__ == "__main__":
             continue
         # view_shap_importance(room)  # This function will pop up a demo window for each room.
         plot_shap_interact(room)
-        # plot_distribution(room)
+    #     plot_distribution(room)
     # plot_error_distribution(23)
     # plot_room_number_data_and_R2()

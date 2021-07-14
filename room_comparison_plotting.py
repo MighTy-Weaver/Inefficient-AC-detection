@@ -5,9 +5,9 @@ import pandas as pd
 import seaborn as sns
 from matplotlib import pyplot as plt
 
-folder_name = "20210616192104_cate2_KMeans_22_33"
+folder_name = "20210713191456_cate3_KMeans_22_33"
 mode = "CLU"  # "CSV" or "CLU"
-categories = ["Low", "High"]
+categories = ['High', 'Moderate', 'Low']
 
 # Ignore all the warnings and Set some general settings of all the matplotlib.
 warnings.filterwarnings('ignore')
@@ -29,11 +29,9 @@ replaced_2016 = [714, 503, 1012, 235, 520, 735, 220, 335, 619, 817, 807, 202, 42
                  414, 715, 311, 330]
 replaced_2017 = [432, 802, 227, 231, 733, 210, 315, 427, 430, 612, 613, 626, 630, 704, 914, 123, 307, 903]
 replaced_2018 = [219, 516, 417, 605, 816, 703, 803, 818, 915, 122, 207, 310, 320, 824, 518, 530, 913]
-replaced_2019_high = [822, 730, 608, 617, 708, 825, 204, 216, 413, 703, 725, 810, 410, 830, 523, 618, 415, 328, 1007,
-                      821,
-                      332]
-replaced_2019_low = [822, 730, 608, 617, 708, 825, 204]
-replaced_2019_high = replaced_2019_low
+replaced_2019 = [332, 608, 822]
+replaced_2020 = [808, 819, 403, 716, 303, 334, 832, 401, 622]
+replaced_2021 = [604, 702, 735, 217, 517, 710]
 
 if mode == "CLU":
     lists = np.load('{}/category.npy'.format(folder_name), allow_pickle=True)
@@ -57,18 +55,19 @@ if mode == "CLU":
     for i in range(num_cates):
         print(len(lists[i]))
         print(
-            "In [{}] category:\n2016 Replaced: {}({}%)\t2017 Replaced: {}({}%)\t2018 Replaced: {}({}%)\t2019 Replaced: {}({}%)".format(
+            "In [{}] category:\n2016 Replaced: {}({}%)\t2017 Replaced: {}({}%)\t2018 Replaced: {}({}%)\t2019 Replaced: {}({}%)\t2020 Replaced: {}({}%)\t2021 Replaced: {}({}%)".format(
                 categories[i], len([j for j in lists[i] if int(j) in replaced_2016]),
                 100 * round(len([j for j in lists[i] if int(j) in replaced_2016]) / len(lists[i]), 4),
                 len([j for j in lists[i] if int(j) in replaced_2017]),
                 100 * round(len([j for j in lists[i] if int(j) in replaced_2017]) / len(lists[i]), 4),
                 len([j for j in lists[i] if int(j) in replaced_2018]),
                 100 * round(len([j for j in lists[i] if int(j) in replaced_2018]) / len(lists[i]), 4),
-                len([j for j in lists[i] if int(j) in replaced_2019_low]) if num_cates == 0 else len(
-                    [j for j in lists[i] if int(j) in replaced_2019_high]),
-                100 * round(len([j for j in lists[i] if int(j) in replaced_2019_low]) / len(lists[i]),
-                            4) if num_cates == 0 else 100 * round(
-                    len([j for j in lists[i] if int(j) in replaced_2019_high]) / len(lists[i]), 4)))
+                len([j for j in lists[i] if int(j) in replaced_2019]),
+                100 * round(len([j for j in lists[i] if int(j) in replaced_2019]) / len(lists[i]), 4),
+                len([j for j in lists[i] if int(j) in replaced_2020]),
+                100 * round(len([j for j in lists[i] if int(j) in replaced_2020]) / len(lists[i]), 4),
+                len([j for j in lists[i] if int(j) in replaced_2021]),
+                100 * round(len([j for j in lists[i] if int(j) in replaced_2021]) / len(lists[i]), 4)))
 elif mode == "CSV":
     room_split = pd.read_csv('./room_classification.csv', index_col=None)
 
@@ -105,7 +104,7 @@ elif mode == "CSV":
                  label="Low efficiency, mean={}kWh, #data{}".format(low_mean, len(low_df)), color="skyblue",
                  hist_kws={"edgecolor": "black"}, kde_kws={"linewidth": "3"})
 
-    plt.legend()
-    plt.xlabel("Hourly AC Electricity Consumption/kWh")
-    plt.ylabel("Kernel Density")
+    plt.legend(fontsize=22)
+    plt.xlabel("Hourly AC Electricity Consumption/kWh", fontsize=22)
+    plt.ylabel("Kernel Density", fontsize=22)
     plt.show()

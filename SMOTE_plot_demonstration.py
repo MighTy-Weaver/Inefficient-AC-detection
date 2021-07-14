@@ -10,7 +10,7 @@ import pandas as pd
 from imblearn.over_sampling import SMOTE
 from tqdm import tqdm
 
-folder_name = 'Test_1-R2_2021_03_31_15_29_37'
+folder_name = 'Test_R2_HYPEROPT_SMOTE'
 
 # Make the folder to store the result
 if not os.path.exists('./{}/SMOTE_room/'.format(folder_name)):
@@ -69,15 +69,15 @@ for room in tqdm(data['Location'].unique()):
 
 # With the AC values in each room before and after the SMOTE, we can plot a distribution histogram for all rooms.
 plt.hist(AC_before, bins=100, facecolor="blue", edgecolor="black", align='mid')
-plt.xlabel("Hourly AC Electricity Consumption/kWh")
-plt.ylabel("Number of Samples")
+plt.xlabel("Hourly AC Electricity Consumption/kWh", fontsize=18)
+plt.ylabel("Number of Samples", fontsize=18)
 plt.ylim(ymax=12500, ymin=0)
 plt.savefig('./{}/SMOTE_Before.png'.format(folder_name), bbox_inches='tight')
 plt.clf()
 
 plt.hist(AC_after, bins=100, facecolor="blue", edgecolor="black", align='mid')
-plt.xlabel("Hourly AC Electricity Consumption/kWh")
-plt.ylabel("Number of Samples")
+plt.xlabel("Hourly AC Electricity Consumption/kWh", fontsize=18)
+plt.ylabel("Number of Samples", fontsize=18)
 plt.ylim(ymax=12500, ymin=0)
 plt.savefig('./{}/SMOTE_After.png'.format(folder_name), bbox_inches='tight')
 plt.clf()
