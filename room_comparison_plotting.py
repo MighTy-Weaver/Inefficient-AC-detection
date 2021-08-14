@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 
 folder_name = "20210713191456_cate3_KMeans_22_33"
 mode = "CLU"  # "CSV" or "CLU"
-categories = ['High', 'Moderate', 'Low']
+categories = ['Normal', 'Low', 'Moderate']
 
 # Ignore all the warnings and Set some general settings of all the matplotlib.
 warnings.filterwarnings('ignore')
@@ -29,13 +29,18 @@ replaced_2016 = [714, 503, 1012, 235, 520, 735, 220, 335, 619, 817, 807, 202, 42
                  414, 715, 311, 330]
 replaced_2017 = [432, 802, 227, 231, 733, 210, 315, 427, 430, 612, 613, 626, 630, 704, 914, 123, 307, 903]
 replaced_2018 = [219, 516, 417, 605, 816, 703, 803, 818, 915, 122, 207, 310, 320, 824, 518, 530, 913]
-replaced_2019 = [332, 608, 822]
+replaced_2019 = [822, 730, 608]
 replaced_2020 = [808, 819, 403, 716, 303, 334, 832, 401, 622]
 replaced_2021 = [604, 702, 735, 217, 517, 710]
 
 if mode == "CLU":
     lists = np.load('{}/category.npy'.format(folder_name), allow_pickle=True)
     num_cates = len(lists)
+
+    # --------------------------------------------------------
+    lists[0].extend(lists[2])
+    num_cates = 2
+    # -------------------------------------------------------------------------
 
     dataframes = [[data[data.Location == int(i)] for i in lis] for lis in lists]
     dataframe_list = [pd.concat(dataframes[i]) for i in range(num_cates)]
@@ -47,7 +52,7 @@ if mode == "CLU":
                      label="{} efficiency, mean={}kWh, #data={}".format(categories[i], mean_list[i],
                                                                         len(dataframe_list[i])), color=colors[i],
                      hist_kws={"edgecolor": "black"}, kde_kws={"linewidth": "3"})
-    plt.legend()
+    plt.legend(frameon=False)
     plt.xlabel("Hourly AC Electricity Consumption/kWh")
     plt.ylabel("Kernel Density")
     plt.show()

@@ -1,9 +1,10 @@
 # Data-driven Smart Assessment of Inefficient AC detection
 
-This is the code repository for the paper ***Data-driven Smart Assessment of Room Air Conditioner Efficiency for Saving
+This is the code repository for the paper ***Data-driven Assessment of Room Air Conditioner Efficiency for Saving
 Energy***, you can find the paper directly through **here (To Be Updated)**.
 
-[comment]: <> (*Remark: The paper is currently under review at [Applied Energy]&#40;https://www.journals.elsevier.com/applied-energy&#41;.*)
+*Remark: The paper is currently submitted
+to [Sustainable Cities and Society](https://www.journals.elsevier.com/sustainable-cities-and-society).*
 
 ## 1. Environment Setup
 
@@ -71,20 +72,20 @@ At the same time, there are also some codes for other visualizations used in the
 SMOTE, `room_comparison_plotting.py` is for comparison among high/mid/low efficiency ACs.
 
 In general, this a plot for our result:
-![Room Graph](demo/Room_dis.png)
+![Room Graph](demo/room_comparison.png)
 
 ## 5. Acknowledgement
 
 This project was supported by the [Undergraduate Research Opportunity Program (UROP)](https://urop.ust.hk/) of The Hong
-Kong University of Science and Technology (HKUST), the Guangdong Basic and Applied Basic Research Foundation (
-2019A1515010828), and HKUST startup. We also thank the data support from
-the [Sustainable Smart Campus as a Living Lab](https://ssc.hkust.edu.hk/)
-initiative of HKUST. The views and ideas expressed here belong solely to the authors and not to the funding agencies.
+Kong University of Science and Technology (HKUST), and the [Sustainable Smart Campus](https://ssc.hkust.edu.hk/) project
+of HKUST. The views and ideas expressed here belong solely to the authors and not to the funding agencies.
 
-## 6. Citing this work
+[comment]: <> (## 6. Citing this work)
 
-Please use the Bibtex below for citation of this work:
+[comment]: <> (Please use the Bibtex below for citation of this work:)
 
-```
-TO BE UPDATED
-```
+[comment]: <> (```)
+
+[comment]: <> (TO BE UPDATED)
+
+[comment]: <> (```)

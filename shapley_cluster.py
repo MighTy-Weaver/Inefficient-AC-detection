@@ -48,6 +48,7 @@ if cate_base == 'plot':
     image_list = np.array([cv2.imread(img) for img in images])
     print(image_list.shape)
     image_list = image_list.reshape(len(image_list), -1)
+    print(image_list.shape)
     cluster.fit(image_list)
 else:
     rooms = [mdl.split('\\')[-1].split('.')[0] for mdl in glob('./Test_R2_HYPEROPT_SMOTE/models/*.pickle.bat')]

@@ -73,10 +73,31 @@ def plot_shap_interact(room: int):
     explainer = shap.TreeExplainer(model)
     X, y = original_dataloader(room)
     shap_values = explainer.shap_values(X)
-    shap.dependence_plot("Temperature", shap_values, X, interaction_index="Wifi_count", save=True,
-                         path="./{}/shap_TH_ac_plot/{}.png".format(folder_name, room), show=False,
-                         title="Shapley Value for Temperature & WIFI count of Room {}".format(room), xlimit=[22, 33],
-                         ylimit=[-0.25, 0.2], fontsize=19)
+    if room in [903, 332]:
+        shap.dependence_plot("Temperature", shap_values, X, interaction_index="Wifi_count", save=True,
+                             path="./{}/shap_TH_ac_plot/{}.png".format(folder_name, room), show=False,
+                             title="Shapley Value for Temperature & WIFI count of Room {}".format('1'),
+                             xlimit=[22, 33], ylimit=[-0.25, 0.2], fontsize=21)
+    elif room in [328, 630]:
+        shap.dependence_plot("Temperature", shap_values, X, interaction_index="Wifi_count", save=True,
+                             path="./{}/shap_TH_ac_plot/{}.png".format(folder_name, room), show=False,
+                             title="Shapley Value for Temperature & WIFI count of Room {}".format('2'),
+                             xlimit=[22, 33], ylimit=[-0.25, 0.2], fontsize=21)
+    elif room in [910, 821]:
+        shap.dependence_plot("Temperature", shap_values, X, interaction_index="Wifi_count", save=True,
+                             path="./{}/shap_TH_ac_plot/{}.png".format(folder_name, room), show=False,
+                             title="Shapley Value for Temperature & WIFI count of Room {}".format('3'),
+                             xlimit=[22, 33], ylimit=[-0.25, 0.2], fontsize=21)
+    elif room in [1007, 1011]:
+        shap.dependence_plot("Temperature", shap_values, X, interaction_index="Wifi_count", save=True,
+                             path="./{}/shap_TH_ac_plot/{}.png".format(folder_name, room), show=False,
+                             title="Shapley Value for Temperature & WIFI count of Room {}".format('4'),
+                             xlimit=[22, 33], ylimit=[-0.25, 0.2], fontsize=21)
+    else:
+        shap.dependence_plot("Temperature", shap_values, X, interaction_index="Wifi_count", save=True,
+                             path="./{}/shap_TH_ac_plot/{}.png".format(folder_name, room), show=False,
+                             title="Shapley Value for Temperature & WIFI count of Room {}".format(room),
+                             xlimit=[22, 33], ylimit=[-0.25, 0.2], fontsize=21)
     shap.dependence_plot("Temperature", shap_values, X, interaction_index=None, save=True,
                          path="./{}/shap_T_ac_plot/{}.png".format(folder_name, room), show=False,
                          title="Shapley Value for Temperature of Room {}".format(room), xlimit=[22, 33],
@@ -117,7 +138,14 @@ def plot_distribution(room: int):
 
     # Plot the identity line of y=x
     plt.plot(real_range, real_range, color='m', linestyle="-.", linewidth=1, label="Identity Line (y=x)")
-    plt.title("Prediction Validation Graph of Room {}".format(room), fontsize=20)
+    if room == 328:
+        plt.title("Prediction Validation Graph of Room {}".format('A'), fontsize=20)
+    elif room == 621:
+        plt.title("Prediction Validation Graph of Room {}".format('B'), fontsize=20)
+    elif room == 819:
+        plt.title("Prediction Validation Graph of Room {}".format('C'), fontsize=20)
+    else:
+        plt.title("Prediction Validation Graph of Room {}".format(room), fontsize=20)
     plt.ylabel("Prediction", fontsize=17)
     plt.legend(frameon=False, fontsize=15)
     cb = plt.colorbar()
@@ -244,6 +272,6 @@ if __name__ == "__main__":
             continue
         # view_shap_importance(room)  # This function will pop up a demo window for each room.
         plot_shap_interact(room)
-    #     plot_distribution(room)
+        # plot_distribution(room)
     # plot_error_distribution(23)
     # plot_room_number_data_and_R2()
