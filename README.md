@@ -12,14 +12,14 @@ The experiment is conducted under: Windows 10 with Python 3.7/3.8 as the develop
 
 Use the following code segment to install all the required packages:
 
-```python
-pip install - r requirements.txt
+```commandline
+pip install -r requirements.txt
 ```
 
 The following code segment is for updating the *pip*:
 
-```python
-python - m pip install --upgrade pip
+```commandline
+python -m pip install --upgrade pip
 ```
 
 ## 2. Data Compilation
