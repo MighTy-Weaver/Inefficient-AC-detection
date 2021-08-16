@@ -4,7 +4,7 @@
 /models/
 /shap_TH_ac_plot/
 /SMOTE_room/
-/2016-2019 UG Hall 6.xlsx
+/2016_2019_replacement_record.xlsx
 /2020_data_compiled.csv
 /2020_data_initial.csv
 /all_data_without_wifi.csv
@@ -30,3 +30,4 @@
 /replacement_barplot_with2015.png
 /replacement_barplot_with2015_3cate.png
 /validation_correct.py
+/2020_2021_replacement_record.xlsx
