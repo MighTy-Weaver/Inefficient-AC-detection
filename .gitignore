@@ -10,7 +10,6 @@
 /all_data_without_wifi.csv
 /Original_Version_Models/error.csv
 /Original_Version_Models/prediction.csv
-/room_list_ with_AC_ status.docx
 /summer_data_compiled.csv
 /.idea/
 /Test_R2_2021_03_30_12_27_42/
@@ -31,3 +30,4 @@
 /replacement_barplot_with2015_3cate.png
 /validation_correct.py
 /2020_2021_replacement_record.xlsx
+/room_list_with_AC_status.docx
