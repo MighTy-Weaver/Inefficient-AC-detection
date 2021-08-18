@@ -73,42 +73,19 @@ def plot_shap_interact(room: int):
     explainer = shap.TreeExplainer(model)
     X, y = original_dataloader(room)
     shap_values = explainer.shap_values(X)
-    if room in [903, 332]:
-        shap.dependence_plot("Temperature", shap_values, X, interaction_index="Wifi_count", save=True,
-                             path="./{}/shap_TH_ac_plot/{}.png".format(folder_name, room), show=False,
-                             title="Shapley Value for Temperature & WIFI count of Room {}".format('1'),
-                             xlimit=[22, 33], ylimit=[-0.25, 0.2], fontsize=21)
-    elif room in [328, 630]:
-        shap.dependence_plot("Temperature", shap_values, X, interaction_index="Wifi_count", save=True,
-                             path="./{}/shap_TH_ac_plot/{}.png".format(folder_name, room), show=False,
-                             title="Shapley Value for Temperature & WIFI count of Room {}".format('2'),
-                             xlimit=[22, 33], ylimit=[-0.25, 0.2], fontsize=21)
-    elif room in [910, 821]:
-        shap.dependence_plot("Temperature", shap_values, X, interaction_index="Wifi_count", save=True,
-                             path="./{}/shap_TH_ac_plot/{}.png".format(folder_name, room), show=False,
-                             title="Shapley Value for Temperature & WIFI count of Room {}".format('3'),
-                             xlimit=[22, 33], ylimit=[-0.25, 0.2], fontsize=21)
-    elif room in [1007, 1011]:
-        shap.dependence_plot("Temperature", shap_values, X, interaction_index="Wifi_count", save=True,
-                             path="./{}/shap_TH_ac_plot/{}.png".format(folder_name, room), show=False,
-                             title="Shapley Value for Temperature & WIFI count of Room {}".format('4'),
-                             xlimit=[22, 33], ylimit=[-0.25, 0.2], fontsize=21)
-    else:
-        shap.dependence_plot("Temperature", shap_values, X, interaction_index="Wifi_count", save=True,
-                             path="./{}/shap_TH_ac_plot/{}.png".format(folder_name, room), show=False,
-                             title="Shapley Value for Temperature & WIFI count of Room {}".format(room),
-                             xlimit=[22, 33], ylimit=[-0.25, 0.2], fontsize=21)
-    shap.dependence_plot("Temperature", shap_values, X, interaction_index=None, save=True,
-                         path="./{}/shap_T_ac_plot/{}.png".format(folder_name, room), show=False,
-                         title="Shapley Value for Temperature of Room {}".format(room), xlimit=[22, 33],
-                         ylimit=[-0.25, 0.2], fontsize=1, axis_hide=True)
+    label_dict = {332: 'C', 903: '1', 328: 'D', 630: '2', 821: 'A', 910: '3', 1007: 'B', 1011: '4'}
+    for room_num in room_list:
+        if room_num not in label_dict.keys():
+            label_dict[room_num] = room_num
+    shap.dependence_plot("Temperature", shap_values, X, interaction_index="Wifi_count", save=True,
+                         path="./{}/shap_TH_ac_plot/{}.png".format(folder_name, room), show=False,
+                         title="Shapley Value for Temperature & WIFI count of Room {}".format(label_dict[room]),
+                         xlimit=[22, 33], ylimit=[-0.25, 0.2], fontsize=22, axis_hide=False, tick_size=17)
     plt.clf()
 
 
 # This is the function to plot the distribution of the predictions according to the ground truth.
 def plot_distribution(room: int):
-    plt.rcParams.update({'font.size': 13})
-
     input, real = original_dataloader(room)
     matrix = DMatrix(input, label=real)
     model = pickle.load(open('./{}/trntst_models/{}.pickle.bat'.format(folder_name, room), 'rb'))
@@ -139,20 +116,22 @@ def plot_distribution(room: int):
     # Plot the identity line of y=x
     plt.plot(real_range, real_range, color='m', linestyle="-.", linewidth=1, label="Identity Line (y=x)")
     if room == 328:
-        plt.title("Prediction Validation Graph of Room {}".format('A'), fontsize=20)
+        plt.title("Prediction Validation Graph of Room {}".format('X'), fontsize=20, pad=25)
     elif room == 621:
-        plt.title("Prediction Validation Graph of Room {}".format('B'), fontsize=20)
+        plt.title("Prediction Validation Graph of Room {}".format('Y'), fontsize=20, pad=25)
     elif room == 819:
-        plt.title("Prediction Validation Graph of Room {}".format('C'), fontsize=20)
+        plt.title("Prediction Validation Graph of Room {}".format('Z'), fontsize=20, pad=25)
     else:
-        plt.title("Prediction Validation Graph of Room {}".format(room), fontsize=20)
-    plt.ylabel("Prediction", fontsize=17)
+        plt.title("Prediction Validation Graph of Room {}".format(room), fontsize=20, pad=25)
+    plt.ylabel("Prediction", fontsize=18)
     plt.legend(frameon=False, fontsize=15)
     cb = plt.colorbar()
     cb.set_label("Error (Observation - Prediction)", size=17)
+    cb.ax.tick_params(labelsize=17)
     plt.xlabel(
-        "Observation\n#data: {}  R2-score: {}  RMSE: {}".format(
-            len(real), round(room_error.loc[0, 'test-R2-mean'], 4), round(room_error.loc[0, 'test-rmse-mean'], 4)),
+        "Observation\n#data: {}  R2 score: {}  RMSE: {}".format(
+            len(real), round(room_error.loc[0, 'test-R2-mean'], 4),
+            round(room_error.loc[0, 'test-rmse-mean'], 4)).replace('R2', '$\mathdefault{R^2}$'),
         fontsize=18)
     if room == 916:
         plt.xlim([0, 2])
@@ -160,6 +139,8 @@ def plot_distribution(room: int):
     else:
         plt.xlim([0, 1.25])
         plt.ylim([0, 1.25])
+    plt.xticks(fontsize=17)
+    plt.yticks(fontsize=17)
     plt.savefig("./{}/distribution_plot/room{}.png".format(folder_name, room), bbox_inches='tight')
     # plt.show()
     plt.clf()
@@ -190,9 +171,13 @@ def plot_error_distribution(bin=20):
     y = ((1 / (np.sqrt(2 * np.pi) * r2_std)) *
          np.exp(-0.5 * (1 / r2_std * (r2_bins - r2_mean)) ** 2))
     ax.plot(r2_bins, y, '--')
-    plt.xlabel("R2 Score\nMean R2 Score: {}".format(round(mean(r2_list), 4)), fontsize=20)
+    plt.xlabel("R2 score\nMean R2 score: {}".format(round(mean(r2_list), 4)).replace('R2',
+                                                                                     '$\mathdefault{R^2}$'),
+               fontsize=20)
     plt.ylabel("Density", fontsize=20)
-    plt.title("The R2 Score Distribution Histogram (Cross-Validation)", fontsize=20)
+    plt.title("The $\mathdefault{R^2}$ score Distribution Histogram (Cross-Validation)", fontsize=20, pad=25)
+    plt.xticks(fontsize=17)
+    plt.yticks(fontsize=17)
     plt.savefig('./{}/R2Dis_CV_bin{}.png'.format(folder_name, bin), bbox_inches='tight')
     plt.clf()
 
@@ -204,7 +189,9 @@ def plot_error_distribution(bin=20):
     ax.plot(rmse_bins, y, '--')
     plt.xlabel("Root Mean Square Error\nMean RMSE: {}".format(round(mean(rmse_list), 4)), fontsize=20)
     plt.ylabel("Density", fontsize=20)
-    plt.title("The RMSE Distribution Histogram (Cross-Validation)", fontsize=20)
+    plt.title("The RMSE Distribution Histogram (Cross-Validation)", fontsize=20, pad=25)
+    plt.xticks(fontsize=17)
+    plt.yticks(fontsize=17)
     plt.savefig('./{}/RMSEDis_CV_bin{}.png'.format(folder_name, bin), bbox_inches='tight')
     plt.clf()
 
@@ -266,12 +253,13 @@ if __name__ == "__main__":
         os.mkdir('./{}/distribution_plot/'.format(folder_name))
     # if not os.path.exists('./{}/SMOTE_room/'.format(folder_name)):
     #     os.mkdir('./{}/SMOTE_room/'.format(folder_name))
+    label_dict = {332: 'C', 903: '1', 328: 'D', 630: '2', 821: 'A', 910: '3', 1007: 'B', 1011: '4'}
     for room in tqdm(room_list):
         # Delete the rooms with low quality data manually.
         if room == 309 or room == 312 or room == 826 or room == 917 or room == 1001:
             continue
         # view_shap_importance(room)  # This function will pop up a demo window for each room.
         plot_shap_interact(room)
-        # plot_distribution(room)
+        plot_distribution(room)
     # plot_error_distribution(23)
     # plot_room_number_data_and_R2()
