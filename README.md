@@ -4,7 +4,7 @@ This is the code repository for the paper ***Data-driven Assessment of Room Air 
 Energy***, you can find the paper directly through **here (To Be Updated)**.
 
 *Remark: The paper is currently submitted
-to [Sustainable Cities and Society](https://www.journals.elsevier.com/sustainable-cities-and-society).*
+to [Journal of Cleaner Production](https://www.journals.elsevier.com/journal-of-cleaner-production).*
 
 ## 1. Environment Setup
 
