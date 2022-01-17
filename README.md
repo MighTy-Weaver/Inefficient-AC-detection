@@ -1,10 +1,9 @@
 # Data-driven Smart Assessment of Inefficient AC detection
 
 This is the code repository for the paper ***Data-driven Assessment of Room Air Conditioner Efficiency for Saving
-Energy***, you can find the paper directly through **here (To Be Updated)**.
-
-*Remark: The paper is currently submitted
-to [Journal of Cleaner Production](https://www.journals.elsevier.com/journal-of-cleaner-production).*
+Energy*** published in
+the [Journal of Cleaner Production](https://www.journals.elsevier.com/journal-of-cleaner-production), you can find the
+paper directly through **here (To Be Updated)**.
 
 ## 1. Environment Setup
 
@@ -79,12 +78,10 @@ This project was supported by the [Undergraduate Research Opportunity Program (U
 Kong University of Science and Technology (HKUST), and the [Sustainable Smart Campus](https://ssc.hkust.edu.hk/) project
 of HKUST. The views and ideas expressed here belong solely to the authors and not to the funding agencies.
 
-[comment]: <> (## 6. Citing this work)
+## 6. Citing this work
 
-[comment]: <> (Please use the Bibtex below for citation of this work:)
+Please use the Bibtex below for citation of this work:
 
-[comment]: <> (```)
-
-[comment]: <> (TO BE UPDATED)
-
-[comment]: <> (```)
+```
+TO BE UPDATED
+```
