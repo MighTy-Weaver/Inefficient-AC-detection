@@ -3,7 +3,7 @@
 This is the code repository for the paper ***Data-driven Assessment of Room Air Conditioner Efficiency for Saving
 Energy*** published in
 the [Journal of Cleaner Production](https://www.journals.elsevier.com/journal-of-cleaner-production), you can find the
-paper directly through **here (To Be Updated)**.
+paper directly through **[here](https://doi.org/10.1016/j.jclepro.2022.130615)**.
 
 ## 1. Environment Setup
 
