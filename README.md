@@ -83,5 +83,12 @@ of HKUST. The views and ideas expressed here belong solely to the authors and no
 Please use the Bibtex below for citation of this work:
 
 ```
-TO BE UPDATED
+@article{wang2022data,
+  title={Data-driven assessment of room air conditioner efficiency for saving energy},
+  author={Wang, Weiqi and Zhou, Zixuan and Lu, Zhongming},
+  journal={Journal of Cleaner Production},
+  pages={130615},
+  year={2022},
+  publisher={Elsevier}
+}
 ```
