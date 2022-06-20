@@ -5,9 +5,24 @@ Energy*** published in
 the [Journal of Cleaner Production](https://www.journals.elsevier.com/journal-of-cleaner-production), you can find the
 paper directly through **[here](https://doi.org/10.1016/j.jclepro.2022.130615)**.
 
-## 1. Environment Setup
+## 1. Citing this work
 
-The experiment is conducted under: Windows 10 with Python 3.7/3.8 as the developing environment.
+Please use the Bibtex below for citation of this work:
+
+```
+@article{wang2022data,
+  title={Data-driven assessment of room air conditioner efficiency for saving energy},
+  author={Wang, Weiqi and Zhou, Zixuan and Lu, Zhongming},
+  journal={Journal of Cleaner Production},
+  pages={130615},
+  year={2022},
+  publisher={Elsevier}
+}
+```
+
+## 2. Environment Setup
+
+The experiment is conducted under Windows 10 with Python 3.7/3.8 as the developing environment.
 
 Use the following code segment to install all the required packages:
 
@@ -21,7 +36,7 @@ The following code segment is for updating the *pip*:
 python -m pip install --upgrade pip
 ```
 
-## 2. Data Compilation
+## 3. Data Compilation
 
 ***Due to the privacy issues, the dataset will not be made open to public.***
 
@@ -32,7 +47,7 @@ our data is compiled from different categories of data.
 
 *Remarks: Please notice that the `Location` in `sample_data.csv` are set to 0 for privacy.*
 
-## 3. Training the XGBoost Model
+## 4. Training the XGBoost Model
 
 Again, you must have all the packages above installed.
 
@@ -53,7 +68,7 @@ We provide some statistical results by the XGBoost models.
 ![R2 Score Distribution Histogram](demo/R2_Dis.png)
 ![RMSE Distribution Histogram](demo/RMSE_Dis.png)
 
-## 4. Result Visualization
+## 5. Result Visualization
 
 After you've trained the models, run the `prediction_processing.py` to generate the visual graphs of the result.
 
@@ -72,23 +87,12 @@ SMOTE, `room_comparison_plotting.py` is for comparison among high/mid/low effici
 In general, this a plot for our result:
 ![Room Graph](demo/room_comparison.png)
 
-## 5. Acknowledgement
+## 6. Acknowledgement
 
 This project was supported by the [Undergraduate Research Opportunity Program (UROP)](https://urop.ust.hk/) of The Hong
 Kong University of Science and Technology (HKUST), and the [Sustainable Smart Campus](https://ssc.hkust.edu.hk/) project
 of HKUST. The views and ideas expressed here belong solely to the authors and not to the funding agencies.
 
-## 6. Citing this work
+## 7. Acknowledgement
 
-Please use the Bibtex below for citation of this work:
-
-```
-@article{wang2022data,
-  title={Data-driven assessment of room air conditioner efficiency for saving energy},
-  author={Wang, Weiqi and Zhou, Zixuan and Lu, Zhongming},
-  journal={Journal of Cleaner Production},
-  pages={130615},
-  year={2022},
-  publisher={Elsevier}
-}
-```
+If you have any question, feel free to email me at `1874240442@qq.com`. This email will be active all the time. 
