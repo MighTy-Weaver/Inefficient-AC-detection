@@ -1,5 +1,4 @@
-# Data-driven Assessment of Room Air Conditioner Efficiency for
-Saving Energy
+# Data-driven Assessment of Room Air Conditioner Efficiency for Saving Energy
 
 This is the official code repository for the paper ***[Data-driven Assessment of Room Air Conditioner Efficiency for
 Saving Energy](https://doi.org/10.1016/j.jclepro.2022.130615)*** published in
